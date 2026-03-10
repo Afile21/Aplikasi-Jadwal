@@ -42,5 +42,49 @@
         </main>
 
     </div>
+    <div class="modal-overlay" id="modal-tambah">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Tambah Jadwal Baru</h2>
+                <button class="btn-close" id="btn-tutup-modal">&times;</button>
+            </div>
+            <form id="form-jadwal" class="modal-body">
+                <div class="form-group">
+                    <label>Judul Aktivitas</label>
+                    <input type="text" id="input-judul" placeholder="Contoh: Belajar Jaringan" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="input-kategori">
+                            <option value="1">Belajar</option>
+                            <option value="2">Istirahat</option>
+                            <option value="3">Hiburan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="date" id="input-tanggal" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Jam Mulai</label>
+                        <input type="time" id="input-mulai" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Jam Selesai</label>
+                        <input type="time" id="input-selesai" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-simpan">Simpan Jadwal</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
 </body>
 </html>
