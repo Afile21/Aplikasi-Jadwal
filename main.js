@@ -73,6 +73,22 @@ ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
         console.error("Gagal mengambil jadwal:", error);
     }
 });
+
+
+// --- LOGIKA BARU: MENGUBAH STATUS JADWAL (CHECKBOX) ---
+ipcMain.on('update-status', (event, data) => {
+    try {
+        // Mengubah status di tabel jadwal berdasarkan id_jadwal
+        const stmt = db.prepare(`UPDATE jadwal SET status = ? WHERE id_jadwal = ?`);
+        stmt.run(data.status, data.id);
+        
+        // Beri tahu layar bahwa update berhasil agar layar me-refresh otomatis
+        event.reply('update-sukses');
+    } catch (error) {
+        console.error("Gagal update status:", error);
+    }
+});
+// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 function createWindow() {
     const win = new BrowserWindow({

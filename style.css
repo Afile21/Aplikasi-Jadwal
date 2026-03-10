@@ -266,3 +266,14 @@ body {
     cursor: pointer;
     accent-color: var(--accent-color);
 }
+
+/* --- GAYA JADWAL SELESAI --- */
+.jadwal-card.selesai {
+    opacity: 0.5; /* Membuat kartu meredup */
+    background-color: #252535; /* Warna background sedikit lebih gelap */
+}
+
+.jadwal-card.selesai h3 {
+    text-decoration: line-through; /* Mencoret teks judul aktivitas */
+    color: var(--text-secondary);
+}
