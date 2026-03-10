@@ -7,7 +7,7 @@ const Database = require("better-sqlite3");
 const dbPath = path.join(__dirname, "database.db");
 const db = new Database(dbPath);
 
-// 2. Membuat Tabel
+// 2. Membuat Tabel dan Mengisi Data Default Kategori
 db.exec(`
     CREATE TABLE IF NOT EXISTS kategori (
         id_kategori INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,6 +26,11 @@ db.exec(`
         is_berulang INTEGER DEFAULT 0,
         FOREIGN KEY (id_kategori) REFERENCES kategori (id_kategori)
     );
+
+    -- Masukkan kategori default ini jika tabel kategori masih kosong
+    INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (1, 'Belajar', '#89b4fa');
+    INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (2, 'Istirahat', '#f9e2af');
+    INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (3, 'Hiburan', '#a6e3a1');
 `);
 
 // --- LOGIKA BARU: MENERIMA DATA DARI RENDERER LALU SIMPAN KE DATABASE ---
@@ -37,12 +42,11 @@ ipcMain.on('simpan-jadwal', (event, data) => {
         `);
         stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai);
         
-        // Kirim pesan balik kalau sukses
         event.reply('simpan-sukses', 'Mantap! Jadwal berhasil disimpan.');
     } catch (error) {
         console.error("Database error:", error);
-        // Kirim pesan balik kalau gagal
-        event.reply('simpan-gagal', 'Gagal menyimpan jadwal ke database.');
+        // Kita ubah pesannya agar memunculkan error asli dari mesin database
+        event.reply('simpan-gagal', 'Gagal menyimpan: ' + error.message);
     }
 });
 // -------------------------------------------------------------------------
