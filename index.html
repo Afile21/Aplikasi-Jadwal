@@ -7,9 +7,40 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Halo, Selamat Datang di Aplikasi Jadwal!</h1>
-        <p>Pondasi aplikasi desktop Anda sudah berhasil berjalan.</p>
+    <div class="app-layout">
+        
+        <aside class="sidebar">
+            <div class="profile-section">
+                <h2>JadwalKu.</h2>
+                <p id="current-date">Senin, 10 Maret</p>
+            </div>
+            
+            <button class="btn-tambah" id="btn-tambah-jadwal">+ Tambah Jadwal</button>
+            
+            <nav class="menu-nav">
+                <a href="#" class="menu-item active">🏠 Beranda (Fokus)</a>
+                <a href="#" class="menu-item">📅 Kalender</a>
+                <a href="#" class="menu-item">📊 Statistik</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Fokus Hari Ini</h1>
+                <div class="progress-container">
+                    <span>Progres: 0%</span>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+                </div>
+            </header>
+
+            <section class="schedule-board">
+                <div class="empty-state">
+                    <p>Belum ada jadwal untuk hari ini.</p>
+                    <p>Klik tombol <b>+ Tambah Jadwal</b> untuk memulai.</p>
+                </div>
+            </section>
+        </main>
+
     </div>
 </body>
 </html>
