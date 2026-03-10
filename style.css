@@ -1,7 +1,22 @@
-.sirna {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+body {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
-/* test fitur baru */
+
+.container {
+    text-align: center;
+    background-color: #2d2d2d;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+h1 {
+    color: #4da6ff;
+}
