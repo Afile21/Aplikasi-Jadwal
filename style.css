@@ -216,3 +216,53 @@ body {
 }
 
 .btn-simpan:hover { background-color: var(--accent-hover); }
+
+/* --- TAMPILAN KARTU JADWAL --- */
+.jadwal-card {
+    background-color: var(--bg-card);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.jadwal-card:hover {
+    transform: translateX(5px);
+}
+
+.jadwal-waktu {
+    font-weight: bold;
+    color: var(--text-secondary);
+    width: 130px;
+    flex-shrink: 0;
+    font-size: 15px;
+}
+
+.jadwal-info {
+    flex: 1;
+}
+
+.jadwal-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.jadwal-kategori {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+/* Checkbox (Kotak Centang) */
+.jadwal-aksi input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: var(--accent-color);
+}

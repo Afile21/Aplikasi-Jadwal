@@ -50,7 +50,30 @@ ipcMain.on('simpan-jadwal', (event, data) => {
     }
 });
 // -------------------------------------------------------------------------
+// ... (kode simpan-jadwal sebelumnya ada di atas sini) ...
 
+// --- LOGIKA BARU: MENGAMBIL JADWAL DARI DATABASE ---
+ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
+    try {
+        // Mengambil jadwal yang tanggalnya sama dengan hari ini
+        // Kita gabungkan (JOIN) dengan tabel kategori untuk mengambil warnanya
+        const stmt = db.prepare(`
+            SELECT jadwal.*, kategori.nama_kategori, kategori.kode_warna 
+            FROM jadwal 
+            JOIN kategori ON jadwal.id_kategori = kategori.id_kategori 
+            WHERE jadwal.tanggal = ? 
+            ORDER BY jadwal.waktu_mulai ASC
+        `);
+        
+        const jadwalList = stmt.all(tanggalHariIni);
+        
+        // Kirim datanya kembali ke layar (renderer)
+        event.reply('data-jadwal', jadwalList);
+    } catch (error) {
+        console.error("Gagal mengambil jadwal:", error);
+    }
+});
+// -------------------------------------------------------------------------
 function createWindow() {
     const win = new BrowserWindow({
         width: 1000,
