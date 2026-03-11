@@ -116,6 +116,7 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
             </div>
             <div class="jadwal-aksi">
                 <input type="checkbox" class="cek-status" data-id="${jadwal.id_jadwal}" ${isSelesai ? 'checked' : ''} title="Tandai Selesai">
+                <button class="btn-hapus" data-id="${jadwal.id_jadwal}" title="Hapus Jadwal">🗑️</button>
             </div>
         `;
         
@@ -138,6 +139,21 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
             
             // Kirim perintah ke main.js untuk update database
             ipcRenderer.send('update-status', { id: idJadwal, status: statusBaru });
+        });
+    });
+    // --- EVENT LISTENER UNTUK TOMBOL HAPUS ---
+    const tombolHapus = document.querySelectorAll('.btn-hapus');
+    tombolHapus.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idJadwal = e.target.getAttribute('data-id');
+            
+            // Tampilkan pop-up konfirmasi bawaan sistem
+            const yakin = confirm("Apakah Anda yakin ingin menghapus jadwal ini secara permanen?");
+            
+            if (yakin) {
+                // Jika klik OK, kirim perintah hapus ke main.js
+                ipcRenderer.send('hapus-jadwal', idJadwal);
+            }
         });
     });
 });

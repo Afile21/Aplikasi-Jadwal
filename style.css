@@ -277,3 +277,19 @@ body {
     text-decoration: line-through; /* Mencoret teks judul aktivitas */
     color: var(--text-secondary);
 }
+
+/* --- GAYA TOMBOL HAPUS --- */
+.btn-hapus {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 12px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.btn-hapus:hover {
+    opacity: 1;
+    transform: scale(1.2); /* Sedikit membesar saat disentuh kursor */
+}

@@ -88,6 +88,20 @@ ipcMain.on('update-status', (event, data) => {
         console.error("Gagal update status:", error);
     }
 });
+
+// --- LOGIKA BARU: MENGHAPUS JADWAL (DELETE) ---
+ipcMain.on('hapus-jadwal', (event, idJadwal) => {
+    try {
+        const stmt = db.prepare(`DELETE FROM jadwal WHERE id_jadwal = ?`);
+        stmt.run(idJadwal);
+        
+        // Gunakan sinyal 'update-sukses' yang sudah ada agar layar langsung me-refresh
+        event.reply('update-sukses');
+    } catch (error) {
+        console.error("Gagal menghapus jadwal:", error);
+    }
+});
+// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 function createWindow() {
