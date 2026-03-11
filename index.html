@@ -26,7 +26,12 @@
 
         <main class="main-content">
             <header class="main-header">
-                <h1>Fokus Hari Ini</h1>
+                <div class="header-nav-tanggal">
+                    <button class="btn-nav-tanggal" id="btn-kemarin" title="Hari Sebelumnya">&lt;</button>
+                    <h1 id="teks-tanggal-fokus">Fokus Hari Ini</h1>
+                    <button class="btn-nav-tanggal" id="btn-besok" title="Hari Berikutnya">&gt;</button>
+                </div>
+
                 <div class="progress-container">
                     <span>Progres: 0%</span>
                     <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
