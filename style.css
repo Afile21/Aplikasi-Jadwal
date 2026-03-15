@@ -321,3 +321,19 @@ body {
     background-color: var(--accent-color);
     color: #11111b;
 }
+
+/* --- GAYA TOMBOL EDIT --- */
+.btn-edit {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 10px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}

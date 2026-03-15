@@ -7,6 +7,8 @@ const btnTutupModal = document.getElementById('btn-tutup-modal');
 const formJadwal = document.getElementById('form-jadwal');
 // Variabel untuk melacak tanggal mana yang sedang dilihat di layar utama
 let tanggalAktif = new Date();
+let editId = null; // Menyimpan ID jadwal jika sedang dalam mode edit
+let jadwalListGlobal = []; // Menyimpan data jadwal sementara agar mudah di edit
 
 // Menampilkan hari dan tanggal saat ini di Sidebar
 const dateElement = document.getElementById('current-date');
@@ -15,8 +17,11 @@ dateElement.innerText = new Date().toLocaleDateString('id-ID', options);
 
 // Buka modal
 btnTambahJadwal.addEventListener('click', () => {
-    modalTambah.classList.add('show');
+    editId = null; // Pastikan ini mode tambah, bukan edit
+    document.querySelector('.modal-header h2').innerText = "Tambah Jadwal Baru";
+    formJadwal.reset();
     document.getElementById('input-tanggal').valueAsDate = new Date();
+    modalTambah.classList.add('show');
 });
 
 // Tutup modal
@@ -34,17 +39,30 @@ modalTambah.addEventListener('click', (e) => {
 formJadwal.addEventListener('submit', (e) => {
     e.preventDefault(); 
 
-    // 1. Bungkus data dari form
+    const mulai = document.getElementById('input-mulai').value;
+    const selesai = document.getElementById('input-selesai').value;
+
+    // --- VALIDASI WAKTU ---
+    if (selesai <= mulai) {
+        alert("Oops! Jam Selesai tidak boleh lebih awal atau sama dengan Jam Mulai.");
+        return; // Hentikan proses eksekusi kode di bawahnya
+    }
+
     const dataJadwal = {
         judul: document.getElementById('input-judul').value,
         kategoriId: document.getElementById('input-kategori').value,
         tanggal: document.getElementById('input-tanggal').value,
-        mulai: document.getElementById('input-mulai').value,
-        selesai: document.getElementById('input-selesai').value
+        mulai: mulai,
+        selesai: selesai
     };
 
-    // 2. Serahkan data ke kurir untuk dikirim ke main.js
-    ipcRenderer.send('simpan-jadwal', dataJadwal);
+    // --- CEK MODE EDIT ATAU TAMBAH BARU ---
+    if (editId) {
+        dataJadwal.id = editId; // Masukkan ID jadwal yang mau di edit
+        ipcRenderer.send('edit-jadwal', dataJadwal);
+    } else {
+        ipcRenderer.send('simpan-jadwal', dataJadwal);
+    }
 });
 
 // --- MENDENGARKAN JAWABAN DARI MAIN.JS ---
@@ -70,7 +88,7 @@ function getTanggalFormatDB(dateObj) {
     return `${year}-${month}-${day}`;
 }
 
-// 2. Fungsi memperbarui judul H1 (Tulis "Fokus Hari Ini" jika hari ini, atau tulis tanggalnya jika hari lain)
+// 2. Fungsi memperbarui judul H1 (Tulis "Fokus Hari Ini" jika hari ini, atau tulis tanggal nya jika hari lain)
 function updateTeksTanggal() {
     const h1 = document.getElementById('teks-tanggal-fokus');
     const opsi = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -126,7 +144,7 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
     // Buat kartu untuk setiap jadwal
     jadwalList.forEach(jadwal => {
         const isSelesai = jadwal.status === 'Selesai';
-        if (isSelesai) jumlahSelesai++; // Tambah 1 jika statusnya Selesai
+        if (isSelesai) jumlahSelesai++; // Tambah 1 jika status nya Selesai
 
         const card = document.createElement('div');
         // Tambahkan class 'selesai' jika isSelesai bernilai true
@@ -143,6 +161,7 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
             </div>
             <div class="jadwal-aksi">
                 <input type="checkbox" class="cek-status" data-id="${jadwal.id_jadwal}" ${isSelesai ? 'checked' : ''} title="Tandai Selesai">
+                <button class="btn-edit" data-id="${jadwal.id_jadwal}" title="Edit Jadwal">✏️</button>
                 <button class="btn-hapus" data-id="${jadwal.id_jadwal}" title="Hapus Jadwal">🗑️</button>
             </div>
         `;
@@ -180,6 +199,31 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
             if (yakin) {
                 // Jika klik OK, kirim perintah hapus ke main.js
                 ipcRenderer.send('hapus-jadwal', idJadwal);
+            }
+        });
+    });
+
+    // --- EVENT LISTENER UNTUK TOMBOL EDIT ---
+    const tombolEdit = document.querySelectorAll('.btn-edit');
+    tombolEdit.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idJadwal = e.target.getAttribute('data-id');
+            // Cari data jadwal yang spesifik dari list
+            const jadwalEdit = jadwalListGlobal.find(j => j.id_jadwal == idJadwal);
+            
+            if (jadwalEdit) {
+                editId = jadwalEdit.id_jadwal; // Aktifkan mode edit
+                document.querySelector('.modal-header h2').innerText = "Edit Jadwal"; // Ubah teks judul pop-up
+                
+                // Isi form dengan data lama
+                document.getElementById('input-judul').value = jadwalEdit.judul_aktivitas;
+                document.getElementById('input-kategori').value = jadwalEdit.id_kategori;
+                document.getElementById('input-tanggal').value = jadwalEdit.tanggal;
+                document.getElementById('input-mulai').value = jadwalEdit.waktu_mulai;
+                document.getElementById('input-selesai').value = jadwalEdit.waktu_selesai;
+
+                // Tampilkan form
+                modalTambah.classList.add('show');
             }
         });
     });

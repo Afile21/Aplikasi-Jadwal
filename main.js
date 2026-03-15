@@ -55,7 +55,7 @@ ipcMain.on('simpan-jadwal', (event, data) => {
 // --- LOGIKA BARU: MENGAMBIL JADWAL DARI DATABASE ---
 ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
     try {
-        // Mengambil jadwal yang tanggalnya sama dengan hari ini
+        // Mengambil jadwal yang tanggal nya sama dengan hari ini
         // Kita gabungkan (JOIN) dengan tabel kategori untuk mengambil warnanya
         const stmt = db.prepare(`
             SELECT jadwal.*, kategori.nama_kategori, kategori.kode_warna 
@@ -67,7 +67,7 @@ ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
         
         const jadwalList = stmt.all(tanggalHariIni);
         
-        // Kirim datanya kembali ke layar (renderer)
+        // Kirim data nya kembali ke layar (renderer)
         event.reply('data-jadwal', jadwalList);
     } catch (error) {
         console.error("Gagal mengambil jadwal:", error);
@@ -99,6 +99,24 @@ ipcMain.on('hapus-jadwal', (event, idJadwal) => {
         event.reply('update-sukses');
     } catch (error) {
         console.error("Gagal menghapus jadwal:", error);
+    }
+});
+
+// --- LOGIKA BARU: MENGEDIT JADWAL (UPDATE) ---
+ipcMain.on('edit-jadwal', (event, data) => {
+    try {
+        const stmt = db.prepare(`
+            UPDATE jadwal 
+            SET id_kategori = ?, judul_aktivitas = ?, tanggal = ?, waktu_mulai = ?, waktu_selesai = ?
+            WHERE id_jadwal = ?
+        `);
+        stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai, data.id);
+        
+        // Kita bisa menggunakan sinyal 'simpan-sukses' agar form di-reset dan layar me-refresh
+        event.reply('simpan-sukses', 'Jadwal berhasil diperbarui.');
+    } catch (error) {
+        console.error("Gagal edit jadwal:", error);
+        event.reply('simpan-gagal', 'Gagal memperbarui: ' + error.message);
     }
 });
 // -------------------------------------------------------------------------
