@@ -125,6 +125,9 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
     const progressText = document.querySelector('.progress-container span');
     const progressFill = document.querySelector('.progress-fill');
     
+    // PENTING: Simpan data dari database ke variabel global agar bisa dibaca saat mau edit
+    jadwalListGlobal = jadwalList; 
+
     // Jika tidak ada jadwal
     if (jadwalList.length === 0) {
         board.innerHTML = `
@@ -139,15 +142,14 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
     }
 
     board.innerHTML = '';
-    let jumlahSelesai = 0; // Variabel penampung jumlah jadwal yang berstatus "Selesai"
+    let jumlahSelesai = 0; 
 
     // Buat kartu untuk setiap jadwal
     jadwalList.forEach(jadwal => {
         const isSelesai = jadwal.status === 'Selesai';
-        if (isSelesai) jumlahSelesai++; // Tambah 1 jika status nya Selesai
+        if (isSelesai) jumlahSelesai++; 
 
         const card = document.createElement('div');
-        // Tambahkan class 'selesai' jika isSelesai bernilai true
         card.className = `jadwal-card ${isSelesai ? 'selesai' : ''}`;
         card.style.borderLeft = `5px solid ${jadwal.kode_warna}`;
         
@@ -161,7 +163,9 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
             </div>
             <div class="jadwal-aksi">
                 <input type="checkbox" class="cek-status" data-id="${jadwal.id_jadwal}" ${isSelesai ? 'checked' : ''} title="Tandai Selesai">
+                
                 <button class="btn-edit" data-id="${jadwal.id_jadwal}" title="Edit Jadwal">✏️</button>
+                
                 <button class="btn-hapus" data-id="${jadwal.id_jadwal}" title="Hapus Jadwal">🗑️</button>
             </div>
         `;
@@ -170,34 +174,27 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
     });
 
     // --- KALKULASI PROGRES BAR ---
-    // Rumus: (Jumlah Selesai / Total Jadwal) * 100, lalu dibulatkan (Math.round)
     const persentase = Math.round((jumlahSelesai / jadwalList.length) * 100);
     progressText.innerText = `Progres: ${persentase}%`;
-    progressFill.style.width = `${persentase}%`; // Menggerakkan animasi bar biru
+    progressFill.style.width = `${persentase}%`; 
 
     // --- EVENT LISTENER UNTUK CHECKBOX ---
-    // Mencari semua checkbox yang baru saja dibuat di atas
     const checkboxes = document.querySelectorAll('.cek-status');
     checkboxes.forEach(box => {
         box.addEventListener('change', (e) => {
             const idJadwal = e.target.getAttribute('data-id');
             const statusBaru = e.target.checked ? 'Selesai' : 'Belum Mulai';
-            
-            // Kirim perintah ke main.js untuk update database
             ipcRenderer.send('update-status', { id: idJadwal, status: statusBaru });
         });
     });
+
     // --- EVENT LISTENER UNTUK TOMBOL HAPUS ---
     const tombolHapus = document.querySelectorAll('.btn-hapus');
     tombolHapus.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const idJadwal = e.target.getAttribute('data-id');
-            
-            // Tampilkan pop-up konfirmasi bawaan sistem
             const yakin = confirm("Apakah Anda yakin ingin menghapus jadwal ini secara permanen?");
-            
             if (yakin) {
-                // Jika klik OK, kirim perintah hapus ke main.js
                 ipcRenderer.send('hapus-jadwal', idJadwal);
             }
         });
@@ -207,13 +204,15 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
     const tombolEdit = document.querySelectorAll('.btn-edit');
     tombolEdit.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const idJadwal = e.target.getAttribute('data-id');
+            // Menggunakan btn.getAttribute lebih aman jika kamu mengklik teks emojinya
+            const idJadwal = btn.getAttribute('data-id'); 
+            
             // Cari data jadwal yang spesifik dari list
             const jadwalEdit = jadwalListGlobal.find(j => j.id_jadwal == idJadwal);
             
             if (jadwalEdit) {
                 editId = jadwalEdit.id_jadwal; // Aktifkan mode edit
-                document.querySelector('.modal-header h2').innerText = "Edit Jadwal"; // Ubah teks judul pop-up
+                document.querySelector('.modal-header h2').innerText = "Edit Jadwal"; 
                 
                 // Isi form dengan data lama
                 document.getElementById('input-judul').value = jadwalEdit.judul_aktivitas;
@@ -224,6 +223,8 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
 
                 // Tampilkan form
                 modalTambah.classList.add('show');
+            } else {
+                console.error("Gagal mendapatkan data jadwal yang mau diedit.");
             }
         });
     });
