@@ -66,6 +66,21 @@ db.exec(`
     
     INSERT OR IGNORE INTO rutinitas (id_rutinitas, id_kategori, judul_aktivitas, waktu_mulai, waktu_selesai, prioritas) 
     VALUES (2, 2, 'Makan Siang & Istirahat', '12:00', '13:00', 'Sedang');
+
+
+    CREATE TABLE IF NOT EXISTS proyek (
+        id_proyek INTEGER PRIMARY KEY AUTOINCREMENT,
+        nama_proyek TEXT NOT NULL,
+        target_tanggal TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS milestone (
+        id_milestone INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_proyek INTEGER,
+        nama_tugas TEXT NOT NULL,
+        is_selesai INTEGER DEFAULT 0,
+        FOREIGN KEY (id_proyek) REFERENCES proyek (id_proyek) ON DELETE CASCADE
+    );
 `);
 
 // --- LOGIKA BARU: MENERIMA DATA DARI RENDERER LALU SIMPAN KE DATABASE ---
@@ -205,4 +220,40 @@ app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         app.quit();
     }
+});
+
+
+// --- SISTEM STATISTIK ---
+ipcMain.on('ambil-statistik', (event) => {
+    try {
+        const total = db.prepare(`SELECT COUNT(*) as jml FROM jadwal`).get().jml;
+        const selesai = db.prepare(`SELECT COUNT(*) as jml FROM jadwal WHERE status = 'Done'`).get().jml;
+        event.reply('data-statistik', { total, selesai });
+    } catch (err) { console.error(err); }
+});
+
+// --- SISTEM PROYEK (GOALS) ---
+ipcMain.on('ambil-proyek', (event) => {
+    try {
+        const proyekList = db.prepare(`SELECT * FROM proyek`).all();
+        // Ambil milestone untuk setiap proyek
+        proyekList.forEach(p => {
+            p.milestones = db.prepare(`SELECT * FROM milestone WHERE id_proyek = ?`).all(p.id_proyek);
+        });
+        event.reply('data-proyek', proyekList);
+    } catch (err) { console.error(err); }
+});
+
+ipcMain.on('tambah-proyek-dummy', (event) => {
+    // Fungsi sementara untuk mengetes fitur proyek
+    const insertProyek = db.prepare(`INSERT INTO proyek (nama_proyek, target_tanggal) VALUES (?, ?)`).run('Menjadi Front-End Developer', '2026-12-31');
+    const idBaru = insertProyek.lastInsertRowid;
+    db.prepare(`INSERT INTO milestone (id_proyek, nama_tugas) VALUES (?, ?)`).run(idBaru, 'Belajar HTML & CSS');
+    db.prepare(`INSERT INTO milestone (id_proyek, nama_tugas) VALUES (?, ?)`).run(idBaru, 'Belajar JavaScript Dasar');
+    event.reply('update-proyek-sukses');
+});
+
+ipcMain.on('update-milestone', (event, data) => {
+    db.prepare(`UPDATE milestone SET is_selesai = ? WHERE id_milestone = ?`).run(data.is_selesai, data.id);
+    event.reply('update-proyek-sukses');
 });

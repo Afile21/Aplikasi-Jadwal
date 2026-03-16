@@ -266,3 +266,112 @@ setInterval(() => {
         }
     });
 }, 10000); // Mengecek setiap 10.000 milidetik (10 detik)
+
+
+// --- SISTEM NAVIGASI TAB ---
+const viewBeranda = document.getElementById('view-beranda');
+const viewProyek = document.getElementById('view-proyek');
+const viewStatistik = document.getElementById('view-statistik');
+
+document.getElementById('nav-beranda').addEventListener('click', (e) => {
+    e.preventDefault(); gantiTab(viewBeranda, e.target);
+    loadJadwal();
+});
+
+document.getElementById('nav-proyek').addEventListener('click', (e) => {
+    e.preventDefault(); gantiTab(viewProyek, e.target);
+    ipcRenderer.send('ambil-proyek'); // Minta data proyek ke main.js
+});
+
+document.getElementById('nav-statistik').addEventListener('click', (e) => {
+    e.preventDefault(); gantiTab(viewStatistik, e.target);
+    ipcRenderer.send('ambil-statistik'); // Minta data statistik ke main.js
+});
+
+function gantiTab(viewAktif, menuAktif) {
+    // Sembunyikan semua
+    viewBeranda.style.display = 'none';
+    viewProyek.style.display = 'none';
+    viewStatistik.style.display = 'none';
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    
+    // Tampilkan yang dipilih
+    viewAktif.style.display = 'block';
+    menuAktif.classList.add('active');
+}
+
+// --- MENERIMA DATA STATISTIK ---
+ipcRenderer.on('data-statistik', (event, data) => {
+    const persen = data.total === 0 ? 0 : Math.round((data.selesai / data.total) * 100);
+    document.getElementById('teks-stat-persen').innerText = `${persen}%`;
+    document.getElementById('teks-stat-detail').innerText = `${data.selesai} dari ${data.total} Total Tugas Keseluruhan Selesai`;
+});
+
+// --- MENERIMA DATA PROYEK (GOALS) ---
+ipcRenderer.on('data-proyek', (event, proyekList) => {
+    const container = document.getElementById('list-proyek-container');
+    container.innerHTML = '';
+
+    if (proyekList.length === 0) {
+        container.innerHTML = `<p class="empty-state">Belum ada tujuan jangka panjang.</p>`;
+        return;
+    }
+
+    proyekList.forEach(proyek => {
+        // Kalkulasi persentase milestone
+        const totalMs = proyek.milestones.length;
+        const selesaiMs = proyek.milestones.filter(m => m.is_selesai === 1).length;
+        const persen = totalMs === 0 ? 0 : Math.round((selesaiMs / totalMs) * 100);
+
+        let htmlMilestones = '';
+        proyek.milestones.forEach(m => {
+            htmlMilestones += `
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                    <input type="checkbox" class="cek-milestone" data-id="${m.id_milestone}" ${m.is_selesai ? 'checked' : ''} style="accent-color: var(--accent-color); width: 18px; height: 18px;">
+                    <span style="${m.is_selesai ? 'text-decoration: line-through; opacity: 0.5;' : ''}">${m.nama_tugas}</span>
+                </div>
+            `;
+        });
+
+        const card = document.createElement('div');
+        card.className = 'jadwal-card';
+        card.style.flexDirection = 'column';
+        card.style.alignItems = 'stretch';
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 20px; color: var(--accent-color);">${proyek.nama_proyek}</h3>
+                <span style="font-size: 12px; color: var(--text-secondary);">Target: ${proyek.target_tanggal}</span>
+            </div>
+            
+            <div style="background-color: var(--bg-main); height: 8px; border-radius: 4px; margin-top: 10px; overflow: hidden;">
+                <div style="background-color: var(--accent-color); height: 100%; width: ${persen}%; transition: width 0.3s;"></div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-secondary); text-align: right; margin-bottom: 15px;">Progress: ${persen}%</div>
+            
+            <div style="background-color: var(--bg-sidebar); padding: 15px; border-radius: 8px;">
+                <h4 style="margin: 0 0 10px 0;">Milestones (Langkah-langkah):</h4>
+                ${htmlMilestones || '<p style="font-size: 12px; color: var(--text-secondary);">Belum ada langkah.</p>'}
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    // Event Listener untuk Centang Milestone
+    document.querySelectorAll('.cek-milestone').forEach(box => {
+        box.addEventListener('change', (e) => {
+            const id = e.target.getAttribute('data-id');
+            const isSelesai = e.target.checked ? 1 : 0;
+            ipcRenderer.send('update-milestone', { id, is_selesai: isSelesai });
+        });
+    });
+});
+
+// Refresh otomatis jika milestone diupdate
+ipcRenderer.on('update-proyek-sukses', () => {
+    ipcRenderer.send('ambil-proyek');
+});
+
+// Tombol "Mulai Proyek Baru" (Sementara kita inject data dummy)
+document.getElementById('btn-tambah-proyek').addEventListener('click', () => {
+    ipcRenderer.send('tambah-proyek-dummy');
+});
