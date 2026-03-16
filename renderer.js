@@ -490,3 +490,90 @@ function aktifkanDragAndDrop() {
 
 // Panggil fungsinya
 aktifkanDragAndDrop();
+
+
+// ==========================================
+// LOGIKA MENU PENGATURAN
+// ==========================================
+const viewPengaturan = document.getElementById('view-pengaturan');
+
+document.getElementById('nav-pengaturan').addEventListener('click', (e) => {
+    e.preventDefault(); 
+    gantiTab(viewPengaturan, e.target); // Menggunakan fungsi gantiTab yang sudah ada
+    ipcRenderer.send('ambil-pengaturan'); // Minta data terbaru dari database
+});
+
+// Menerima dan merender data Kategori & Rutinitas
+ipcRenderer.on('data-pengaturan', (event, data) => {
+    const wadahKategori = document.getElementById('list-kategori-container');
+    const wadahRutinitas = document.getElementById('list-rutinitas-container');
+    
+    // --- Render Kategori ---
+    wadahKategori.innerHTML = '';
+    data.kategori.forEach(kat => {
+        wadahKategori.innerHTML += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg-sidebar); border-radius: 4px; border-left: 4px solid ${kat.kode_warna};">
+                <span>${kat.nama_kategori}</span>
+                <button class="btn-hapus-kat" data-id="${kat.id_kategori}" style="background: transparent; border: none; cursor: pointer;">🗑️</button>
+            </div>
+        `;
+    });
+
+    // --- Render Rutinitas ---
+    wadahRutinitas.innerHTML = '';
+    data.rutinitas.forEach(rutin => {
+        wadahRutinitas.innerHTML += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg-sidebar); border-radius: 4px;">
+                <div>
+                    <strong>${rutin.judul_aktivitas}</strong><br>
+                    <span style="font-size: 12px; color: var(--text-secondary);">🕒 ${rutin.waktu_mulai} - ${rutin.waktu_selesai}</span>
+                </div>
+                <button class="btn-hapus-rutin" data-id="${rutin.id_rutinitas}" style="background: transparent; border: none; cursor: pointer;">🗑️</button>
+            </div>
+        `;
+    });
+
+    // Event Listener Hapus Kategori
+    document.querySelectorAll('.btn-hapus-kat').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if(confirm("Hapus kategori ini?")) ipcRenderer.send('hapus-kategori', e.target.getAttribute('data-id'));
+        });
+    });
+
+    // Event Listener Hapus Rutinitas
+    document.querySelectorAll('.btn-hapus-rutin').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if(confirm("Hapus rutinitas ini? Jadwal otomatis tidak akan muncul lagi besok.")) ipcRenderer.send('hapus-rutinitas', e.currentTarget.getAttribute('data-id'));
+        });
+    });
+});
+
+// --- Event Tambah Kategori ---
+document.getElementById('form-tambah-kategori').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nama = document.getElementById('input-nama-kat').value;
+    const warna = document.getElementById('input-warna-kat').value;
+    ipcRenderer.send('tambah-kategori', { nama, warna });
+    e.target.reset();
+});
+
+// --- Event Tambah Rutinitas ---
+document.getElementById('form-tambah-rutinitas').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const judul = document.getElementById('input-judul-rutin').value;
+    const mulai = document.getElementById('input-mulai-rutin').value;
+    const selesai = document.getElementById('input-selesai-rutin').value;
+    ipcRenderer.send('tambah-rutinitas', { judul, mulai, selesai });
+    e.target.reset();
+});
+
+// Refresh halaman otomatis jika ada perubahan
+ipcRenderer.on('update-pengaturan-sukses', () => {
+    ipcRenderer.send('ambil-pengaturan');
+    loadKategori(); // Memperbarui dropdown kategori di modal tambah jadwal juga!
+});
+
+// Peringatan jika gagal menghapus kategori
+ipcRenderer.on('gagal-hapus-kategori', (event, pesan) => {
+    alert(pesan);
+});

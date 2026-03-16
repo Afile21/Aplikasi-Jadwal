@@ -277,3 +277,46 @@ ipcMain.on('update-milestone', (event, data) => {
     db.prepare(`UPDATE milestone SET is_selesai = ? WHERE id_milestone = ?`).run(data.is_selesai, data.id);
     event.reply('update-proyek-sukses');
 });
+
+
+// ==========================================
+// SISTEM PENGATURAN (KATEGORI & RUTINITAS)
+// ==========================================
+
+// Ambil data untuk ditampilkan di halaman pengaturan
+ipcMain.on('ambil-pengaturan', (event) => {
+    try {
+        const kategoriList = db.prepare(`SELECT * FROM kategori`).all();
+        const rutinitasList = db.prepare(`SELECT * FROM rutinitas`).all();
+        event.reply('data-pengaturan', { kategori: kategoriList, rutinitas: rutinitasList });
+    } catch (err) { console.error(err); }
+});
+
+// CRUD Kategori
+ipcMain.on('tambah-kategori', (event, data) => {
+    db.prepare(`INSERT INTO kategori (nama_kategori, kode_warna) VALUES (?, ?)`).run(data.nama, data.warna);
+    event.reply('update-pengaturan-sukses');
+});
+
+ipcMain.on('hapus-kategori', (event, idKategori) => {
+    // Hindari menghapus kategori yang sedang dipakai oleh jadwal
+    const cekTerpakai = db.prepare(`SELECT COUNT(*) as total FROM jadwal WHERE id_kategori = ?`).get(idKategori);
+    if (cekTerpakai.total > 0) {
+        event.reply('gagal-hapus-kategori', 'Kategori ini sedang digunakan pada jadwal/rutinitas dan tidak bisa dihapus.');
+    } else {
+        db.prepare(`DELETE FROM kategori WHERE id_kategori = ?`).run(idKategori);
+        event.reply('update-pengaturan-sukses');
+    }
+});
+
+// CRUD Rutinitas
+ipcMain.on('tambah-rutinitas', (event, data) => {
+    // Kita set default kategori ke 1 (atau bebas) untuk rutinitas baru
+    db.prepare(`INSERT INTO rutinitas (id_kategori, judul_aktivitas, waktu_mulai, waktu_selesai, prioritas) VALUES (?, ?, ?, ?, ?)`).run(1, data.judul, data.mulai, data.selesai, 'Sedang');
+    event.reply('update-pengaturan-sukses');
+});
+
+ipcMain.on('hapus-rutinitas', (event, idRutinitas) => {
+    db.prepare(`DELETE FROM rutinitas WHERE id_rutinitas = ?`).run(idRutinitas);
+    event.reply('update-pengaturan-sukses');
+});

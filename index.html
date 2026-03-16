@@ -78,6 +78,38 @@
                     <div id="teks-stat-detail" style="margin-top: 20px; font-weight: bold;">0 dari 0 Tugas Selesai</div>
                 </div>
             </div>
+            <div id="view-pengaturan" style="display: none;">
+                <div class="main-header">
+                    <h1>⚙️ Pengaturan Sistem</h1>
+                </div>
+                
+                <div class="settings-container">
+                    
+                    <div class="jadwal-card settings-box">
+                        <h3>🎨 Kelola Kategori</h3>
+                        <form id="form-tambah-kategori" class="settings-form">
+                            <input type="text" id="input-nama-kat" placeholder="Nama Kategori..." required class="input-setting">
+                            <input type="color" id="input-warna-kat" value="#89b4fa" class="input-color">
+                            <button type="submit" class="btn-tambah-setting">Tambah</button>
+                        </form>
+                        <div id="list-kategori-container" class="settings-list"></div>
+                    </div>
+
+                    <div class="jadwal-card settings-box">
+                        <h3>⏰ Kelola Rutinitas Harian</h3>
+                        <form id="form-tambah-rutinitas" class="settings-form form-col">
+                            <input type="text" id="input-judul-rutin" placeholder="Nama Rutinitas (Misal: Olahraga)" required class="input-setting">
+                            <div class="form-row-setting">
+                                <input type="time" id="input-mulai-rutin" required class="input-setting">
+                                <input type="time" id="input-selesai-rutin" required class="input-setting">
+                            </div>
+                            <button type="submit" class="btn-tambah-setting btn-full">Tambah Rutinitas</button>
+                        </form>
+                        <div id="list-rutinitas-container" class="settings-list"></div>
+                    </div>
+
+                </div>
+            </div>
 
         </main>
 

@@ -427,3 +427,94 @@ body {
     background-color: var(--bg-main);
     border: 2px dashed var(--accent-color);
 }
+
+
+/* --- MENU PENGATURAN --- */
+.settings-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.settings-box {
+    flex: 1;
+}
+
+.settings-box h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--accent-color);
+}
+
+.settings-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-col {
+    flex-direction: column;
+}
+
+.form-row-setting {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.input-setting {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--text-secondary);
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: border 0.3s;
+}
+
+.input-setting:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+.input-color {
+    height: 38px;
+    width: 45px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.btn-tambah-setting {
+    padding: 10px 15px;
+    background-color: var(--accent-color);
+    color: var(--bg-main);
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.1s;
+}
+
+.btn-tambah-setting:hover { opacity: 0.9; }
+.btn-tambah-setting:active { transform: scale(0.97); }
+
+.btn-full { width: 100%; }
+
+/* Merapikan List Kategori & Rutinitas yang di-generate JS */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings-list > div {
+    transition: transform 0.2s;
+}
+
+.settings-list > div:hover {
+    transform: translateX(5px);
+}
