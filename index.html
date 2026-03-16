@@ -132,6 +132,33 @@
             </form>
         </div>
     </div>
+    <div class="overlay" id="modal-proyek">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🎯 Tambah Tujuan Baru</h2>
+                <button class="btn-tutup" id="btn-tutup-proyek">&times;</button>
+            </div>
+            <form id="form-proyek">
+                <div class="form-group">
+                    <label>Nama Proyek / Tujuan</label>
+                    <input type="text" id="input-nama-proyek" placeholder="Contoh: Menguasai React.js" required>
+                </div>
+                <div class="form-group">
+                    <label>Target Selesai</label>
+                    <input type="date" id="input-target-proyek" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Langkah-langkah (Milestones)</label>
+                    <div id="wadah-milestone" style="display: flex; flex-direction: column; gap: 8px;">
+                        </div>
+                    <button type="button" id="btn-tambah-ms" style="margin-top: 10px; padding: 8px; background: var(--bg-sidebar); border: 1px dashed var(--text-secondary); color: var(--text-primary); border-radius: 4px; cursor: pointer; width: 100%;">+ Tambah Langkah</button>
+                </div>
+
+                <button type="submit" class="btn-simpan" style="margin-top: 20px;">Simpan Proyek</button>
+            </form>
+        </div>
+    </div>
 
     <script src="renderer.js"></script>
 </body>

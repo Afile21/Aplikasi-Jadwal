@@ -18,6 +18,20 @@ CREATE TABLE IF NOT EXISTS "kategori" (
 	"kode_warna"	TEXT NOT NULL,
 	PRIMARY KEY("id_kategori" AUTOINCREMENT)
 );
+CREATE TABLE IF NOT EXISTS "milestone" (
+	"id_milestone"	INTEGER,
+	"id_proyek"	INTEGER,
+	"nama_tugas"	TEXT NOT NULL,
+	"is_selesai"	INTEGER DEFAULT 0,
+	PRIMARY KEY("id_milestone" AUTOINCREMENT),
+	FOREIGN KEY("id_proyek") REFERENCES "proyek"("id_proyek") ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS "proyek" (
+	"id_proyek"	INTEGER,
+	"nama_proyek"	TEXT NOT NULL,
+	"target_tanggal"	TEXT,
+	PRIMARY KEY("id_proyek" AUTOINCREMENT)
+);
 CREATE TABLE IF NOT EXISTS "rutinitas" (
 	"id_rutinitas"	INTEGER,
 	"id_kategori"	INTEGER,

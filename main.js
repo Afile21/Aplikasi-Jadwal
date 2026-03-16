@@ -244,13 +244,33 @@ ipcMain.on('ambil-proyek', (event) => {
     } catch (err) { console.error(err); }
 });
 
-ipcMain.on('tambah-proyek-dummy', (event) => {
-    // Fungsi sementara untuk mengetes fitur proyek
-    const insertProyek = db.prepare(`INSERT INTO proyek (nama_proyek, target_tanggal) VALUES (?, ?)`).run('Menjadi Front-End Developer', '2026-12-31');
-    const idBaru = insertProyek.lastInsertRowid;
-    db.prepare(`INSERT INTO milestone (id_proyek, nama_tugas) VALUES (?, ?)`).run(idBaru, 'Belajar HTML & CSS');
-    db.prepare(`INSERT INTO milestone (id_proyek, nama_tugas) VALUES (?, ?)`).run(idBaru, 'Belajar JavaScript Dasar');
-    event.reply('update-proyek-sukses');
+// --- MENYIMPAN PROYEK ASLI ---
+ipcMain.on('tambah-proyek', (event, data) => {
+    try {
+        // 1. Simpan nama dan target proyeknya dulu
+        const insertProyek = db.prepare(`INSERT INTO proyek (nama_proyek, target_tanggal) VALUES (?, ?)`).run(data.nama, data.target);
+        const idBaru = insertProyek.lastInsertRowid; // Ambil ID proyek yang baru saja dibuat
+        
+        // 2. Simpan semua langkah-langkahnya (milestones) ke proyek tersebut
+        const insertMilestone = db.prepare(`INSERT INTO milestone (id_proyek, nama_tugas) VALUES (?, ?)`);
+        const insertBanyak = db.transaction((milestones) => {
+            for (const ms of milestones) {
+                insertMilestone.run(idBaru, ms);
+            }
+        });
+        insertBanyak(data.milestones);
+        
+        event.reply('update-proyek-sukses');
+    } catch (err) { console.error(err); }
+});
+
+// --- MENGHAPUS PROYEK ---
+ipcMain.on('hapus-proyek', (event, idProyek) => {
+    try {
+        // Karena di schema kita pakai ON DELETE CASCADE, menghapus proyek otomatis menghapus semua milestone-nya
+        db.prepare(`DELETE FROM proyek WHERE id_proyek = ?`).run(idProyek);
+        event.reply('update-proyek-sukses');
+    } catch (err) { console.error(err); }
 });
 
 ipcMain.on('update-milestone', (event, data) => {
