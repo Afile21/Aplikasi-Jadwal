@@ -275,6 +275,22 @@ setInterval(() => {
 const viewBeranda = document.getElementById('view-beranda');
 const viewProyek = document.getElementById('view-proyek');
 const viewStatistik = document.getElementById('view-statistik');
+const viewPengaturan = document.getElementById('view-pengaturan'); // [BARU] Pindahkan variabel ini ke atas
+
+function gantiTab(viewAktif, menuAktif) {
+    // Sembunyikan SEMUA view terlebih dahulu
+    if(viewBeranda) viewBeranda.style.display = 'none';
+    if(viewProyek) viewProyek.style.display = 'none';
+    if(viewStatistik) viewStatistik.style.display = 'none';
+    if(viewPengaturan) viewPengaturan.style.display = 'none'; // [BARU] Pastikan pengaturan juga disembunyikan
+    
+    // Hilangkan warna aktif dari semua menu
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    
+    // Tampilkan view yang sedang diklik dan beri warna aktif pada menunya
+    if(viewAktif) viewAktif.style.display = 'block';
+    if(menuAktif) menuAktif.classList.add('active');
+}
 
 document.getElementById('nav-beranda').addEventListener('click', (e) => {
     e.preventDefault(); gantiTab(viewBeranda, e.target);
@@ -291,17 +307,6 @@ document.getElementById('nav-statistik').addEventListener('click', (e) => {
     ipcRenderer.send('ambil-statistik'); // Minta data statistik ke main.js
 });
 
-function gantiTab(viewAktif, menuAktif) {
-    // Sembunyikan semua
-    viewBeranda.style.display = 'none';
-    viewProyek.style.display = 'none';
-    viewStatistik.style.display = 'none';
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    
-    // Tampilkan yang dipilih
-    viewAktif.style.display = 'block';
-    menuAktif.classList.add('active');
-}
 
 // --- MENERIMA DATA STATISTIK ---
 ipcRenderer.on('data-statistik', (event, data) => {
@@ -495,7 +500,7 @@ aktifkanDragAndDrop();
 // ==========================================
 // LOGIKA MENU PENGATURAN
 // ==========================================
-const viewPengaturan = document.getElementById('view-pengaturan');
+
 
 document.getElementById('nav-pengaturan').addEventListener('click', (e) => {
     e.preventDefault(); 
@@ -570,7 +575,7 @@ document.getElementById('form-tambah-rutinitas').addEventListener('submit', (e) 
 // Refresh halaman otomatis jika ada perubahan
 ipcRenderer.on('update-pengaturan-sukses', () => {
     ipcRenderer.send('ambil-pengaturan');
-    loadKategori(); // Memperbarui dropdown kategori di modal tambah jadwal juga!
+   // loadKategori(); // Memperbarui dropdown kategori di modal tambah jadwal juga!
 });
 
 // Peringatan jika gagal menghapus kategori
