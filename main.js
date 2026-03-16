@@ -367,3 +367,11 @@ ipcMain.on('hapus-rutinitas', (event, idRutinitas) => {
     db.prepare(`DELETE FROM rutinitas WHERE id_rutinitas = ?`).run(idRutinitas);
     event.reply('update-pengaturan-sukses');
 });
+
+// --- MENGAMBIL KATEGORI UNTUK DROPDOWN FORM ---
+ipcMain.on('ambil-kategori-dropdown', (event) => {
+    try {
+        const kategori = db.prepare(`SELECT * FROM kategori`).all();
+        event.reply('data-kategori-dropdown', kategori);
+    } catch (err) { console.error(err); }
+});

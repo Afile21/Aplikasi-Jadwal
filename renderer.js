@@ -628,10 +628,32 @@ document.getElementById('form-tambah-rutinitas').addEventListener('submit', (e) 
 // Refresh halaman otomatis jika ada perubahan
 ipcRenderer.on('update-pengaturan-sukses', () => {
     ipcRenderer.send('ambil-pengaturan');
-   // loadKategori(); // Memperbarui dropdown kategori di modal tambah jadwal juga!
+   loadKategori(); // Memperbarui dropdown kategori di modal tambah jadwal juga!
 });
 
 // Peringatan jika gagal menghapus kategori
 ipcRenderer.on('gagal-hapus-kategori', (event, pesan) => {
     alert(pesan);
 });
+
+// ==========================================
+// LOGIKA DROPDOWN KATEGORI DINAMIS
+// ==========================================
+function loadKategori() {
+    ipcRenderer.send('ambil-kategori-dropdown');
+}
+
+ipcRenderer.on('data-kategori-dropdown', (event, kategoriList) => {
+    const select = document.getElementById('input-kategori');
+    select.innerHTML = ''; // Kosongkan dulu
+    
+    kategoriList.forEach(k => {
+        const option = document.createElement('option');
+        option.value = k.id_kategori;
+        option.textContent = k.nama_kategori;
+        select.appendChild(option);
+    });
+});
+
+// Panggil fungsi ini saat aplikasi pertama kali dibuka
+loadKategori();
