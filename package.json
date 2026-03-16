@@ -12,7 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "better-sqlite3": "^12.6.2",
-    "electron": "^40.8.0"
+    "electron": "^40.8.0",
+    "sortablejs": "^1.15.7"
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.3",

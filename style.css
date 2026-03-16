@@ -412,3 +412,18 @@ body {
     font-size: 12px;
     cursor: pointer;
 }
+
+/* --- EFEK DRAG AND DROP KANBAN --- */
+.jadwal-card {
+    cursor: grab; /* Mengubah ikon mouse menjadi bentuk tangan terbuka */
+}
+
+.jadwal-card:active {
+    cursor: grabbing; /* Menjadi tangan menggenggam saat ditekan */
+}
+
+.kartu-bayangan {
+    opacity: 0.4;
+    background-color: var(--bg-main);
+    border: 2px dashed var(--accent-color);
+}

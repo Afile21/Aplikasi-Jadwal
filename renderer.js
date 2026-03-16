@@ -1,4 +1,5 @@
 const { ipcRenderer } = require('electron'); // Memanggil kurir komunikasi
+const Sortable = require('sortablejs'); // Memanggil pustaka drag-and-drop
 
 // Mengambil elemen-elemen dari HTML
 const btnTambahJadwal = document.getElementById('btn-tambah-jadwal');
@@ -154,6 +155,8 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
         const card = document.createElement('div');
         card.className = `jadwal-card ${jadwal.status === 'Done' ? 'selesai' : ''}`;
         card.style.borderLeft = `5px solid ${jadwal.kode_warna}`;
+        card.setAttribute('data-id', jadwal.id_jadwal);
+        
         
         card.innerHTML = `
             <div class="jadwal-badge-container">
@@ -447,3 +450,43 @@ formProyek.addEventListener('submit', (e) => {
     ipcRenderer.send('tambah-proyek', { nama, target, milestones });
     modalProyek.classList.remove('show');
 });
+
+// ==========================================
+// SISTEM DRAG-AND-DROP (KANBAN SORTABLE)
+// ==========================================
+function aktifkanDragAndDrop() {
+    const kolomTodo = document.getElementById('list-todo');
+    const kolomProgress = document.getElementById('list-progress');
+    const kolomDone = document.getElementById('list-done');
+
+    const opsiSortable = {
+        group: 'kanban', // Menghubungkan ketiga kolom agar jadwal bisa berpindah
+        animation: 150,  // Animasi mulus saat digeser (dalam milidetik)
+        ghostClass: 'kartu-bayangan', // Class CSS untuk efek visual saat kartu ditarik
+        onEnd: function (evt) {
+            // Fungsi yang otomatis berjalan saat mouse dilepas (kartu dijatuhkan)
+            const kartu = evt.item;          // Elemen kartu HTML yang ditarik
+            const kolomTujuan = evt.to.id;   // ID kolom tempat kartu dijatuhkan
+            const idJadwal = kartu.getAttribute('data-id'); // Mengambil ID dari database
+
+            // Menentukan status baru berdasarkan nama kolom
+            let statusBaru = 'To Do';
+            if (kolomTujuan === 'list-progress') statusBaru = 'In Progress';
+            else if (kolomTujuan === 'list-done') statusBaru = 'Done';
+
+            // Ubah teks di dropdown agar tetap sinkron dengan posisi kartu
+            kartu.querySelector('.status-dropdown').value = statusBaru;
+
+            // Kirim perintah ke main.js untuk langsung menyimpan posisi baru ke Database!
+            ipcRenderer.send('update-status', { id: idJadwal, status: statusBaru });
+        }
+    };
+
+    // Terapkan ke ketiga wadah list
+    new Sortable(kolomTodo, opsiSortable);
+    new Sortable(kolomProgress, opsiSortable);
+    new Sortable(kolomDone, opsiSortable);
+}
+
+// Panggil fungsinya
+aktifkanDragAndDrop();
