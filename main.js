@@ -223,12 +223,59 @@ app.on("window-all-closed", () => {
 });
 
 
-// --- SISTEM STATISTIK ---
+// --- SISTEM STATISTIK & DASHBOARD (OPSI B: BERBOBOT) ---
+function formatTglDB(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 ipcMain.on('ambil-statistik', (event) => {
     try {
-        const total = db.prepare(`SELECT COUNT(*) as jml FROM jadwal`).get().jml;
-        const selesai = db.prepare(`SELECT COUNT(*) as jml FROM jadwal WHERE status = 'Done'`).get().jml;
-        event.reply('data-statistik', { total, selesai });
+        // 1. Logika Hitung Poin Berbobot
+        const hitungPoin = (tanggal) => {
+            const tugasSelesai = db.prepare(`SELECT prioritas FROM jadwal WHERE tanggal = ? AND status = 'Done'`).all(tanggal);
+            let poin = 0;
+            tugasSelesai.forEach(t => {
+                if (t.prioritas === 'Tinggi') poin += 3;
+                else if (t.prioritas === 'Sedang') poin += 2;
+                else poin += 1; // Rendah
+            });
+            return poin;
+        };
+
+        const hariIni = new Date();
+        const kemarin = new Date(); kemarin.setDate(kemarin.getDate() - 1);
+        
+        const poinHariIni = hitungPoin(formatTglDB(hariIni));
+        const poinKemarin = hitungPoin(formatTglDB(kemarin));
+
+        // 2. Logika Tarik Data Grafik 7 Hari Terakhir
+        const labelHari = [];
+        const dataSelesai = [];
+        const dataBelum = [];
+        const namaHariArr = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+        for (let i = 6; i >= 0; i--) {
+            const tgl = new Date(); tgl.setDate(tgl.getDate() - i);
+            const strTglDB = formatTglDB(tgl);
+            
+            // Format label sumbu X (Misal: "Senin")
+            labelHari.push(i === 0 ? 'Hari Ini' : namaHariArr[tgl.getDay()]);
+
+            const selesai = db.prepare(`SELECT COUNT(*) as jml FROM jadwal WHERE tanggal = ? AND status = 'Done'`).get(strTglDB).jml;
+            const belum = db.prepare(`SELECT COUNT(*) as jml FROM jadwal WHERE tanggal = ? AND status != 'Done'`).get(strTglDB).jml;
+
+            dataSelesai.push(selesai);
+            dataBelum.push(belum);
+        }
+
+        // Kirim data matang ke frontend
+        event.reply('data-statistik', {
+            skor: { hariIni: poinHariIni, kemarin: poinKemarin },
+            grafik: { label: labelHari, selesai: dataSelesai, belum: dataBelum }
+        });
     } catch (err) { console.error(err); }
 });
 

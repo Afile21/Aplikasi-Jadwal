@@ -1,5 +1,7 @@
 const { ipcRenderer } = require('electron'); // Memanggil kurir komunikasi
 const Sortable = require('sortablejs'); // Memanggil pustaka drag-and-drop
+const Chart = require('chart.js/auto');
+let grafikInstance = null; // Menyimpan grafik agar bisa di-refresh
 
 // Mengambil elemen-elemen dari HTML
 const btnTambahJadwal = document.getElementById('btn-tambah-jadwal');
@@ -308,11 +310,62 @@ document.getElementById('nav-statistik').addEventListener('click', (e) => {
 });
 
 
-// --- MENERIMA DATA STATISTIK ---
+// --- MENERIMA DATA STATISTIK & RENDER GRAFIK ---
 ipcRenderer.on('data-statistik', (event, data) => {
-    const persen = data.total === 0 ? 0 : Math.round((data.selesai / data.total) * 100);
-    document.getElementById('teks-stat-persen').innerText = `${persen}%`;
-    document.getElementById('teks-stat-detail').innerText = `${data.selesai} dari ${data.total} Total Tugas Keseluruhan Selesai`;
+    // 1. Update UI Skor
+    document.getElementById('teks-skor-hari-ini').innerText = `${data.skor.hariIni} Poin`;
+
+    const elKomparasi = document.getElementById('teks-komparasi');
+    const selisih = data.skor.hariIni - data.skor.kemarin;
+
+    if (selisih > 0) {
+        elKomparasi.innerHTML = `🔥 Naik <strong>${selisih} Poin</strong> dari kemarin (${data.skor.kemarin} Poin). Pertahankan!`;
+        elKomparasi.style.color = "#a6e3a1"; // Hijau
+    } else if (selisih < 0) {
+        elKomparasi.innerHTML = `📉 Turun <strong>${Math.abs(selisih)} Poin</strong> dari kemarin (${data.skor.kemarin} Poin). Ayo kejar!`;
+        elKomparasi.style.color = "#f38ba8"; // Merah
+    } else {
+        elKomparasi.innerHTML = `⚖️ Stabil. Sama persis dengan kemarin (${data.skor.kemarin} Poin).`;
+        elKomparasi.style.color = "var(--text-secondary)";
+    }
+
+    // 2. Update Grafik Bar Chart.js
+    const ctx = document.getElementById('grafik-mingguan').getContext('2d');
+
+    // Hancurkan grafik lama jika ada, agar tidak glitch saat refresh
+    if (grafikInstance) grafikInstance.destroy();
+
+    grafikInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.grafik.label,
+            datasets: [
+                {
+                    label: 'Tugas Selesai',
+                    data: data.grafik.selesai,
+                    backgroundColor: '#a6e3a1', // Hijau
+                    borderRadius: 4
+                },
+                {
+                    label: 'Belum Selesai',
+                    data: data.grafik.belum,
+                    backgroundColor: '#313244', // Abu-abu gelap / sesuai tema
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+            },
+            plugins: {
+                legend: { labels: { color: '#cdd6f4' } } // Warna teks legenda
+            }
+        }
+    });
 });
 
 // --- MENERIMA DATA PROYEK (GOALS) ---
