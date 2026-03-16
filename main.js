@@ -28,10 +28,27 @@ db.exec(`
         FOREIGN KEY (id_kategori) REFERENCES kategori (id_kategori)
     );
 
+
     -- Masukkan kategori default ini jika tabel kategori masih kosong
     INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (1, 'Belajar', '#89b4fa');
     INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (2, 'Istirahat', '#f9e2af');
     INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (3, 'Hiburan', '#a6e3a1');
+
+    CREATE TABLE IF NOT EXISTS rutinitas (
+        id_rutinitas INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_kategori INTEGER,
+        judul_aktivitas TEXT NOT NULL,
+        waktu_mulai TEXT NOT NULL,
+        waktu_selesai TEXT NOT NULL,
+        prioritas TEXT DEFAULT 'Sedang'
+    );
+
+    -- Contoh Rutinitas Default (Otomatis masuk ke jadwal setiap harinya)
+    INSERT OR IGNORE INTO rutinitas (id_rutinitas, id_kategori, judul_aktivitas, waktu_mulai, waktu_selesai, prioritas) 
+    VALUES (1, 2, 'Tidur & Istirahat', '22:00', '05:00', 'Tinggi');
+    
+    INSERT OR IGNORE INTO rutinitas (id_rutinitas, id_kategori, judul_aktivitas, waktu_mulai, waktu_selesai, prioritas) 
+    VALUES (2, 2, 'Makan Siang & Istirahat', '12:00', '13:00', 'Sedang');
 `);
 
 // --- LOGIKA BARU: MENERIMA DATA DARI RENDERER LALU SIMPAN KE DATABASE ---
@@ -56,8 +73,30 @@ ipcMain.on('simpan-jadwal', (event, data) => {
 // --- LOGIKA BARU: MENGAMBIL JADWAL DARI DATABASE ---
 ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
     try {
-        // Mengambil jadwal yang tanggal nya sama dengan hari ini
-        // Kita gabungkan (JOIN) dengan tabel kategori untuk mengambil warnanya
+        // 1. Cek apakah rutinitas harian sudah disuntikkan ke hari ini? (is_berulang = 1)
+        const cekRutinitas = db.prepare(`SELECT COUNT(*) as total FROM jadwal WHERE tanggal = ? AND is_berulang = 1`).get(tanggalHariIni);
+        
+        // 2. Jika belum ada rutinitas di hari ini, kita suntikkan (Generate)
+        if (cekRutinitas.total === 0) {
+            const rutinitasList = db.prepare(`SELECT * FROM rutinitas`).all();
+            
+            if (rutinitasList.length > 0) {
+                const insertStmt = db.prepare(`
+                    INSERT INTO jadwal (id_kategori, judul_aktivitas, tanggal, waktu_mulai, waktu_selesai, prioritas, status, is_berulang) 
+                    VALUES (?, ?, ?, ?, ?, ?, 'To Do', 1)
+                `);
+                
+                // Gunakan transaction agar proses insert banyak data lebih cepat dan aman
+                const insertBanyak = db.transaction((rutinitas) => {
+                    for (const r of rutinitas) {
+                        insertStmt.run(r.id_kategori, r.judul_aktivitas, tanggalHariIni, r.waktu_mulai, r.waktu_selesai, r.prioritas);
+                    }
+                });
+                insertBanyak(rutinitasList);
+            }
+        }
+
+        // 3. Ambil seluruh jadwal (yang manual + yang rutin) untuk ditampilkan
         const stmt = db.prepare(`
             SELECT jadwal.*, kategori.nama_kategori, kategori.kode_warna 
             FROM jadwal 
@@ -67,8 +106,6 @@ ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
         `);
         
         const jadwalList = stmt.all(tanggalHariIni);
-        
-        // Kirim data nya kembali ke layar (renderer)
         event.reply('data-jadwal', jadwalList);
     } catch (error) {
         console.error("Gagal mengambil jadwal:", error);

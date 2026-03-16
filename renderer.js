@@ -235,3 +235,33 @@ ipcRenderer.on('update-sukses', () => {
 
 // 4. Panggil fungsi loadJadwal saat aplikasi pertama kali dibuka
 loadJadwal();
+
+
+// --- SISTEM NOTIFIKASI PENGINGAT ---
+let jadwalYangSudahDiberitahu = []; // Menyimpan ID jadwal agar tidak di-spam notifikasi
+
+setInterval(() => {
+    // Pastikan kita hanya mengecek jadwal di hari ini (bukan saat melihat hari besok/kemarin)
+    const hariIni = getTanggalFormatDB(new Date());
+    const tanggalSedangDilihat = getTanggalFormatDB(tanggalAktif);
+    
+    if (hariIni !== tanggalSedangDilihat) return; // Berhenti jika sedang tidak di tab "Hari Ini"
+
+    const now = new Date();
+    // Format jam menjadi HH:MM (Contoh: 08:05)
+    const jamSekarang = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+
+    jadwalListGlobal.forEach(jadwal => {
+        // Jika waktunya tiba, status belum Done, dan belum pernah dinotifikasi
+        if (jadwal.waktu_mulai === jamSekarang && jadwal.status !== 'Done' && !jadwalYangSudahDiberitahu.includes(jadwal.id_jadwal)) {
+            
+            // Panggil Notifikasi Sistem OS
+            new Notification("Waktunya Fokus! 🎯", {
+                body: `${jadwal.judul_aktivitas}\nJam: ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}\nPrioritas: ${jadwal.prioritas}`
+            });
+            
+            // Catat ID jadwal ini agar 10 detik kemudian tidak bunyi lagi
+            jadwalYangSudahDiberitahu.push(jadwal.id_jadwal);
+        }
+    });
+}, 10000); // Mengecek setiap 10.000 milidetik (10 detik)
