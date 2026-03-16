@@ -252,11 +252,12 @@ setInterval(() => {
     const jamSekarang = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
 
     jadwalListGlobal.forEach(jadwal => {
-        // Jika waktunya tiba, status belum Done, dan belum pernah dinotifikasi
+        // Jika waktunya tiba, status belum Done, dan belum pernah di notifikasi
         if (jadwal.waktu_mulai === jamSekarang && jadwal.status !== 'Done' && !jadwalYangSudahDiberitahu.includes(jadwal.id_jadwal)) {
             
-            // Panggil Notifikasi Sistem OS
-            new Notification("Waktunya Fokus! 🎯", {
+            // [DIUBAH] Minta main.js yang memunculkan notifikasi
+            ipcRenderer.send('tampilkan-notifikasi', {
+                title: "Waktunya Fokus! 🎯",
                 body: `${jadwal.judul_aktivitas}\nJam: ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}\nPrioritas: ${jadwal.prioritas}`
             });
             

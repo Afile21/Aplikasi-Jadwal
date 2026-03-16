@@ -1,7 +1,24 @@
-const { app, BrowserWindow, ipcMain } = require("electron"); // Tambahkan ipcMain di sini
+const { app, BrowserWindow, ipcMain, Notification } = require("electron"); 
 const path = require("path");
 require("electron-reload")(__dirname);
 const Database = require("better-sqlite3");
+
+// [BARU] Daftarkan ID Aplikasi agar Windows mengizinkan notifikasi
+app.setAppUserModelId("Aplikasi.Jadwal.Ku"); 
+
+// ... (Kode database biarkan saja seperti sebelumnya) ...
+
+// [BARU] Logika untuk memunculkan notifikasi dari sistem operasi
+ipcMain.on('tampilkan-notifikasi', (event, data) => {
+    // Mengecek apakah sistem OS mendukung notifikasi
+    if (Notification.isSupported()) {
+        const notif = new Notification({
+            title: data.title,
+            body: data.body
+        });
+        notif.show(); // Tampilkan!
+    }
+});
 
 // 1. Inisialisasi Database
 const dbPath = path.join(__dirname, "database.db");
@@ -73,7 +90,7 @@ ipcMain.on('simpan-jadwal', (event, data) => {
 // --- LOGIKA BARU: MENGAMBIL JADWAL DARI DATABASE ---
 ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
     try {
-        // 1. Cek apakah rutinitas harian sudah disuntikkan ke hari ini? (is_berulang = 1)
+        // 1. Cek apakah rutinitas harian sudah di suntikkan ke hari ini? (is_berulang = 1)
         const cekRutinitas = db.prepare(`SELECT COUNT(*) as total FROM jadwal WHERE tanggal = ? AND is_berulang = 1`).get(tanggalHariIni);
         
         // 2. Jika belum ada rutinitas di hari ini, kita suntikkan (Generate)
