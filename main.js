@@ -22,7 +22,8 @@ db.exec(`
         tanggal TEXT NOT NULL,
         waktu_mulai TEXT NOT NULL,
         waktu_selesai TEXT NOT NULL,
-        status TEXT DEFAULT 'Belum Mulai',
+        prioritas TEXT DEFAULT 'Sedang', -- [BARU] Kolom prioritas
+        status TEXT DEFAULT 'To Do',     -- [DIUBAH] Default status untuk Kanban
         is_berulang INTEGER DEFAULT 0,
         FOREIGN KEY (id_kategori) REFERENCES kategori (id_kategori)
     );
@@ -37,10 +38,10 @@ db.exec(`
 ipcMain.on('simpan-jadwal', (event, data) => {
     try {
         const stmt = db.prepare(`
-            INSERT INTO jadwal (id_kategori, judul_aktivitas, tanggal, waktu_mulai, waktu_selesai) 
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO jadwal (id_kategori, judul_aktivitas, tanggal, waktu_mulai, waktu_selesai, prioritas, status) 
+            VALUES (?, ?, ?, ?, ?, ?, 'To Do')
         `);
-        stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai);
+        stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai, data.prioritas);
         
         event.reply('simpan-sukses', 'Mantap! Jadwal berhasil disimpan.');
     } catch (error) {
@@ -107,10 +108,10 @@ ipcMain.on('edit-jadwal', (event, data) => {
     try {
         const stmt = db.prepare(`
             UPDATE jadwal 
-            SET id_kategori = ?, judul_aktivitas = ?, tanggal = ?, waktu_mulai = ?, waktu_selesai = ?
+            SET id_kategori = ?, judul_aktivitas = ?, tanggal = ?, waktu_mulai = ?, waktu_selesai = ?, prioritas = ?
             WHERE id_jadwal = ?
         `);
-        stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai, data.id);
+        stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai, data.prioritas, data.id);
         
         // Kita bisa menggunakan sinyal 'simpan-sukses' agar form di-reset dan layar me-refresh
         event.reply('simpan-sukses', 'Jadwal berhasil diperbarui.');

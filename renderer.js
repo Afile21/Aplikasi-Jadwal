@@ -53,7 +53,8 @@ formJadwal.addEventListener('submit', (e) => {
         kategoriId: document.getElementById('input-kategori').value,
         tanggal: document.getElementById('input-tanggal').value,
         mulai: mulai,
-        selesai: selesai
+        selesai: selesai,
+        prioritas: document.getElementById('input-prioritas').value // [BARU]
     };
 
     // --- CEK MODE EDIT ATAU TAMBAH BARU ---
@@ -121,110 +122,107 @@ document.getElementById('btn-besok').addEventListener('click', () => {
 
 // 3. Menerima data dari main.js dan merakit HTML-nya
 ipcRenderer.on('data-jadwal', (event, jadwalList) => {
-    const board = document.querySelector('.schedule-board');
-    const progressText = document.querySelector('.progress-container span');
-    const progressFill = document.querySelector('.progress-fill');
-    
-    // PENTING: Simpan data dari database ke variabel global agar bisa dibaca saat mau edit
     jadwalListGlobal = jadwalList; 
 
-    // Jika tidak ada jadwal
+    const listTodo = document.getElementById('list-todo');
+    const listProgress = document.getElementById('list-progress');
+    const listDone = document.getElementById('list-done');
+    
+    // Kosongkan kolom terlebih dahulu
+    listTodo.innerHTML = ''; listProgress.innerHTML = ''; listDone.innerHTML = '';
+
+    const progressText = document.querySelector('.progress-container span');
+    const progressFill = document.querySelector('.progress-fill');
+
     if (jadwalList.length === 0) {
-        board.innerHTML = `
-            <div class="empty-state">
-                <p>Belum ada jadwal untuk hari ini.</p>
-                <p>Klik tombol <b>+ Tambah Jadwal</b> untuk memulai.</p>
-            </div>
-        `;
+        listTodo.innerHTML = `<p class="empty-state">Belum ada jadwal.</p>`;
         progressText.innerText = 'Progres: 0%';
         progressFill.style.width = '0%';
         return;
     }
 
-    board.innerHTML = '';
     let jumlahSelesai = 0; 
 
-    // Buat kartu untuk setiap jadwal
     jadwalList.forEach(jadwal => {
-        const isSelesai = jadwal.status === 'Selesai';
-        if (isSelesai) jumlahSelesai++; 
+        if (jadwal.status === 'Done') jumlahSelesai++; 
+
+        // Penentuan warna prioritas
+        let classPrioritas = 'sedang';
+        if(jadwal.prioritas === 'Tinggi') classPrioritas = 'tinggi';
+        if(jadwal.prioritas === 'Rendah') classPrioritas = 'rendah';
 
         const card = document.createElement('div');
-        card.className = `jadwal-card ${isSelesai ? 'selesai' : ''}`;
+        card.className = `jadwal-card ${jadwal.status === 'Done' ? 'selesai' : ''}`;
         card.style.borderLeft = `5px solid ${jadwal.kode_warna}`;
         
         card.innerHTML = `
-            <div class="jadwal-waktu">${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}</div>
-            <div class="jadwal-info">
-                <h3>${jadwal.judul_aktivitas}</h3>
-                <span class="jadwal-kategori" style="background-color: ${jadwal.kode_warna}30; color: ${jadwal.kode_warna}; border: 1px solid ${jadwal.kode_warna}">
+            <div class="jadwal-badge-container">
+                <span class="jadwal-kategori" style="background-color: ${jadwal.kode_warna}30; color: ${jadwal.kode_warna};">
                     ${jadwal.nama_kategori}
                 </span>
+                <span class="badge-prioritas ${classPrioritas}">${jadwal.prioritas}</span>
             </div>
-            <div class="jadwal-aksi">
-                <input type="checkbox" class="cek-status" data-id="${jadwal.id_jadwal}" ${isSelesai ? 'checked' : ''} title="Tandai Selesai">
-                
-                <button class="btn-edit" data-id="${jadwal.id_jadwal}" title="Edit Jadwal">✏️</button>
-                
-                <button class="btn-hapus" data-id="${jadwal.id_jadwal}" title="Hapus Jadwal">🗑️</button>
+            
+            <div class="jadwal-info">
+                <h3>${jadwal.judul_aktivitas}</h3>
+                <div style="color: var(--text-secondary); font-size: 13px;">🕒 ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}</div>
+            </div>
+            
+            <div class="jadwal-aksi" style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                <select class="status-dropdown" data-id="${jadwal.id_jadwal}">
+                    <option value="To Do" ${jadwal.status === 'To Do' ? 'selected' : ''}>To Do</option>
+                    <option value="In Progress" ${jadwal.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="Done" ${jadwal.status === 'Done' ? 'selected' : ''}>Done</option>
+                </select>
+                <div>
+                    <button class="btn-edit" data-id="${jadwal.id_jadwal}" title="Edit">✏️</button>
+                    <button class="btn-hapus" data-id="${jadwal.id_jadwal}" title="Hapus">🗑️</button>
+                </div>
             </div>
         `;
         
-        board.appendChild(card);
+        // Masukkan ke kolom yang tepat
+        if (jadwal.status === 'To Do') listTodo.appendChild(card);
+        else if (jadwal.status === 'In Progress') listProgress.appendChild(card);
+        else if (jadwal.status === 'Done') listDone.appendChild(card);
     });
 
-    // --- KALKULASI PROGRES BAR ---
+    // Kalkulasi Progres Bar
     const persentase = Math.round((jumlahSelesai / jadwalList.length) * 100);
     progressText.innerText = `Progres: ${persentase}%`;
     progressFill.style.width = `${persentase}%`; 
 
-    // --- EVENT LISTENER UNTUK CHECKBOX ---
-    const checkboxes = document.querySelectorAll('.cek-status');
-    checkboxes.forEach(box => {
-        box.addEventListener('change', (e) => {
+    // Event Listener untuk Pindah Kolom (Dropdown Status)
+    document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('change', (e) => {
             const idJadwal = e.target.getAttribute('data-id');
-            const statusBaru = e.target.checked ? 'Selesai' : 'Belum Mulai';
+            const statusBaru = e.target.value;
             ipcRenderer.send('update-status', { id: idJadwal, status: statusBaru });
         });
     });
 
-    // --- EVENT LISTENER UNTUK TOMBOL HAPUS ---
-    const tombolHapus = document.querySelectorAll('.btn-hapus');
-    tombolHapus.forEach(btn => {
+    // Tambahkan kembali event listener untuk hapus & edit seperti sebelumnya
+    document.querySelectorAll('.btn-hapus').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const idJadwal = e.target.getAttribute('data-id');
-            const yakin = confirm("Apakah Anda yakin ingin menghapus jadwal ini secara permanen?");
-            if (yakin) {
-                ipcRenderer.send('hapus-jadwal', idJadwal);
-            }
+            if (confirm("Hapus jadwal ini?")) ipcRenderer.send('hapus-jadwal', btn.getAttribute('data-id'));
         });
     });
 
-    // --- EVENT LISTENER UNTUK TOMBOL EDIT ---
-    const tombolEdit = document.querySelectorAll('.btn-edit');
-    tombolEdit.forEach(btn => {
+    document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            // Menggunakan btn.getAttribute lebih aman jika kamu mengklik teks emojinya
             const idJadwal = btn.getAttribute('data-id'); 
-            
-            // Cari data jadwal yang spesifik dari list
             const jadwalEdit = jadwalListGlobal.find(j => j.id_jadwal == idJadwal);
-            
             if (jadwalEdit) {
-                editId = jadwalEdit.id_jadwal; // Aktifkan mode edit
+                editId = jadwalEdit.id_jadwal; 
                 document.querySelector('.modal-header h2').innerText = "Edit Jadwal"; 
-                
-                // Isi form dengan data lama
                 document.getElementById('input-judul').value = jadwalEdit.judul_aktivitas;
                 document.getElementById('input-kategori').value = jadwalEdit.id_kategori;
                 document.getElementById('input-tanggal').value = jadwalEdit.tanggal;
                 document.getElementById('input-mulai').value = jadwalEdit.waktu_mulai;
                 document.getElementById('input-selesai').value = jadwalEdit.waktu_selesai;
-
-                // Tampilkan form
-                modalTambah.classList.add('show');
-            } else {
-                console.error("Gagal mendapatkan data jadwal yang mau diedit.");
+                // Jangan lupa isi dropdown prioritas
+                document.getElementById('input-prioritas').value = jadwalEdit.prioritas || 'Sedang';
+                document.getElementById('modal-tambah').classList.add('show');
             }
         });
     });

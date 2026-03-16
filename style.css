@@ -337,3 +337,78 @@ body {
     opacity: 1;
     transform: scale(1.2);
 }
+
+/* --- KANBAN BOARD --- */
+.kanban-board {
+    display: flex;
+    gap: 20px;
+    height: 100%;
+    margin-top: 10px;
+}
+
+.kanban-column {
+    flex: 1;
+    background-color: var(--bg-sidebar);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kanban-header {
+    padding: 15px;
+    font-weight: bold;
+    font-size: 16px;
+    background-color: var(--bg-card);
+    text-align: center;
+    border-bottom: 2px solid var(--bg-main);
+}
+
+.kanban-list {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Modifikasi Kartu Jadwal untuk Kanban */
+.jadwal-card {
+    background-color: var(--bg-card);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column; /* Ubah orientasi jadi ke bawah */
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.jadwal-card:hover { transform: translateY(-3px); }
+
+.jadwal-badge-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge-prioritas {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.badge-prioritas.tinggi { background-color: #f38ba830; color: #f38ba8; }
+.badge-prioritas.sedang { background-color: #f9e2af30; color: #f9e2af; }
+.badge-prioritas.rendah { background-color: #a6e3a130; color: #a6e3a1; }
+
+.status-dropdown {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    border: 1px solid var(--text-secondary);
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
