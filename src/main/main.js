@@ -5,6 +5,8 @@ require("electron-reload")(path.join(__dirname, "../../"));
 // [BARU] Panggil modul database yang sudah dipisah
 const db = require("./database");
 
+const initIpcJadwal = require("./ipcJadwal"); // Panggil modul IPC untuk jadwal
+initIpcJadwal();
 // [BARU] Daftarkan ID Aplikasi agar Windows mengizinkan notifikasi
 app.setAppUserModelId("Aplikasi.Jadwal.Ku"); 
 
@@ -22,119 +24,6 @@ ipcMain.on('tampilkan-notifikasi', (event, data) => {
     }
 });
 
-// 1. Inisialisasi Database
-
-//
-
-
-// --- LOGIKA BARU: MENERIMA DATA DARI RENDERER LALU SIMPAN KE DATABASE ---
-ipcMain.on('simpan-jadwal', (event, data) => {
-    try {
-        const stmt = db.prepare(`
-            INSERT INTO jadwal (id_kategori, judul_aktivitas, tanggal, waktu_mulai, waktu_selesai, prioritas, status) 
-            VALUES (?, ?, ?, ?, ?, ?, 'To Do')
-        `);
-        stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai, data.prioritas);
-        
-        event.reply('simpan-sukses', 'Mantap! Jadwal berhasil disimpan.');
-    } catch (error) {
-        console.error("Database error:", error);
-        // Kita ubah pesannya agar memunculkan error asli dari mesin database
-        event.reply('simpan-gagal', 'Gagal menyimpan: ' + error.message);
-    }
-});
-// -------------------------------------------------------------------------
-// ... (kode simpan-jadwal sebelumnya ada di atas sini) ...
-
-// --- LOGIKA BARU: MENGAMBIL JADWAL DARI DATABASE ---
-ipcMain.on('ambil-jadwal', (event, tanggalHariIni) => {
-    try {
-        // 1. Cek apakah rutinitas harian sudah di suntikkan ke hari ini? (is_berulang = 1)
-        const cekRutinitas = db.prepare(`SELECT COUNT(*) as total FROM jadwal WHERE tanggal = ? AND is_berulang = 1`).get(tanggalHariIni);
-        
-        // 2. Jika belum ada rutinitas di hari ini, kita suntikkan (Generate)
-        if (cekRutinitas.total === 0) {
-            const rutinitasList = db.prepare(`SELECT * FROM rutinitas`).all();
-            
-            if (rutinitasList.length > 0) {
-                const insertStmt = db.prepare(`
-                    INSERT INTO jadwal (id_kategori, judul_aktivitas, tanggal, waktu_mulai, waktu_selesai, prioritas, status, is_berulang) 
-                    VALUES (?, ?, ?, ?, ?, ?, 'To Do', 1)
-                `);
-                
-                // Gunakan transaction agar proses insert banyak data lebih cepat dan aman
-                const insertBanyak = db.transaction((rutinitas) => {
-                    for (const r of rutinitas) {
-                        insertStmt.run(r.id_kategori, r.judul_aktivitas, tanggalHariIni, r.waktu_mulai, r.waktu_selesai, r.prioritas);
-                    }
-                });
-                insertBanyak(rutinitasList);
-            }
-        }
-
-        // 3. Ambil seluruh jadwal (yang manual + yang rutin) untuk ditampilkan
-        const stmt = db.prepare(`
-            SELECT jadwal.*, kategori.nama_kategori, kategori.kode_warna 
-            FROM jadwal 
-            JOIN kategori ON jadwal.id_kategori = kategori.id_kategori 
-            WHERE jadwal.tanggal = ? 
-            ORDER BY jadwal.waktu_mulai ASC
-        `);
-        
-        const jadwalList = stmt.all(tanggalHariIni);
-        event.reply('data-jadwal', jadwalList);
-    } catch (error) {
-        console.error("Gagal mengambil jadwal:", error);
-    }
-});
-
-
-// --- LOGIKA BARU: MENGUBAH STATUS JADWAL (CHECKBOX) ---
-ipcMain.on('update-status', (event, data) => {
-    try {
-        // Mengubah status di tabel jadwal berdasarkan id_jadwal
-        const stmt = db.prepare(`UPDATE jadwal SET status = ? WHERE id_jadwal = ?`);
-        stmt.run(data.status, data.id);
-        
-        // Beri tahu layar bahwa update berhasil agar layar me-refresh otomatis
-        event.reply('update-sukses');
-    } catch (error) {
-        console.error("Gagal update status:", error);
-    }
-});
-
-// --- LOGIKA BARU: MENGHAPUS JADWAL (DELETE) ---
-ipcMain.on('hapus-jadwal', (event, idJadwal) => {
-    try {
-        const stmt = db.prepare(`DELETE FROM jadwal WHERE id_jadwal = ?`);
-        stmt.run(idJadwal);
-        
-        // Gunakan sinyal 'update-sukses' yang sudah ada agar layar langsung me-refresh
-        event.reply('update-sukses');
-    } catch (error) {
-        console.error("Gagal menghapus jadwal:", error);
-    }
-});
-
-// --- LOGIKA BARU: MENGEDIT JADWAL (UPDATE) ---
-ipcMain.on('edit-jadwal', (event, data) => {
-    try {
-        const stmt = db.prepare(`
-            UPDATE jadwal 
-            SET id_kategori = ?, judul_aktivitas = ?, tanggal = ?, waktu_mulai = ?, waktu_selesai = ?, prioritas = ?
-            WHERE id_jadwal = ?
-        `);
-        stmt.run(data.kategoriId, data.judul, data.tanggal, data.mulai, data.selesai, data.prioritas, data.id);
-        
-        // Kita bisa menggunakan sinyal 'simpan-sukses' agar form di-reset dan layar me-refresh
-        event.reply('simpan-sukses', 'Jadwal berhasil diperbarui.');
-    } catch (error) {
-        console.error("Gagal edit jadwal:", error);
-        event.reply('simpan-gagal', 'Gagal memperbarui: ' + error.message);
-    }
-});
-// -------------------------------------------------------------------------
-// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 function createWindow() {
     const win = new BrowserWindow({
