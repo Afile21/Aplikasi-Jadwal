@@ -533,3 +533,48 @@ body {
     flex-direction: column;
     justify-content: center;
 }
+
+
+/* --- NOTIFIKASI KUSTOM (IN-APP) --- */
+.notif-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    pointer-events: none; /* Agar tidak menghalangi klik jika transparan */
+}
+
+.custom-notif {
+    background-color: var(--bg-sidebar);
+    border-left: 5px solid; /* Warnanya akan diatur via JS */
+    color: var(--text-primary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    min-width: 280px;
+    animation: slideInRight 0.4s ease-out forwards;
+}
+
+.custom-notif h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.custom-notif p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOutUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-20px); opacity: 0; }
+}

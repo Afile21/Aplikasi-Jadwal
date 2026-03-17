@@ -242,35 +242,85 @@ ipcRenderer.on('update-sukses', () => {
 loadJadwal();
 
 
-// --- SISTEM NOTIFIKASI PENGINGAT ---
-let jadwalYangSudahDiberitahu = []; // Menyimpan ID jadwal agar tidak di-spam notifikasi
+// ==========================================
+// SISTEM NOTIFIKASI KUSTOM (VISUAL & AUDIO)
+// ==========================================
+let jadwalDimulaiNotif = []; 
+let jadwalSelesaiNotif = []; 
 
-setInterval(() => {
-    // Pastikan kita hanya mengecek jadwal di hari ini (bukan saat melihat hari besok/kemarin)
-    const hariIni = getTanggalFormatDB(new Date());
-    const tanggalSedangDilihat = getTanggalFormatDB(tanggalAktif);
+// [FONDASI SETTINGS] 
+// Variabel ini sementara kita tulis manual. 
+// Nanti di tahap integrasi pengaturan, nilai ini akan diganti otomatis dari database.
+let suaraNotifPilihan = 'sounds/suara-1.mp3'; 
+
+function tampilkanNotifKustom(judul, pesan, tipe) {
+    // 1. Mainkan Suara dari folder sounds
+    try {
+        const audio = new Audio(suaraNotifPilihan); 
+        audio.play();
+    } catch (err) { console.error("Gagal memutar suara:", err); }
+
+    // 2. Buat Elemen Visual (Pop-up)
+    const container = document.getElementById('notif-container');
+    const notifEl = document.createElement('div');
+    notifEl.className = 'custom-notif';
     
-    if (hariIni !== tanggalSedangDilihat) return; // Berhenti jika sedang tidak di tab "Hari Ini"
+    // Warna berbeda: Hijau untuk mulai, Merah untuk selesai
+    if (tipe === 'mulai') {
+        notifEl.style.borderLeftColor = '#a6e3a1'; // Hijau
+        notifEl.innerHTML = `<h4 style="color: #a6e3a1;">${judul}</h4><p>${pesan}</p>`;
+    } else {
+        notifEl.style.borderLeftColor = '#f38ba8'; // Merah
+        notifEl.innerHTML = `<h4 style="color: #f38ba8;">${judul}</h4><p>${pesan}</p>`;
+    }
+
+    container.appendChild(notifEl);
+
+    // 3. Hilangkan otomatis setelah 7 detik
+    setTimeout(() => {
+        notifEl.style.animation = 'fadeOutUp 0.5s ease-out forwards';
+        setTimeout(() => notifEl.remove(), 500); 
+    }, 7000);
+}
+
+// Cek Waktu Setiap 10 Detik
+setInterval(() => {
+    // Ambil fungsi getTanggalFormatDB (pastikan fungsi ini ada di kodemu sebelumnya)
+    function formatTgl(date) {
+        return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, '0') + "-" + String(date.getDate()).padStart(2, '0');
+    }
+
+    const hariIni = formatTgl(new Date());
+    const tanggalSedangDilihat = formatTgl(tanggalAktif);
+    
+    // Hanya periksa notifikasi jika kita sedang membuka jadwal hari ini
+    if (hariIni !== tanggalSedangDilihat) return;
 
     const now = new Date();
-    // Format jam menjadi HH:MM (Contoh: 08:05)
     const jamSekarang = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
 
     jadwalListGlobal.forEach(jadwal => {
-        // Jika waktunya tiba, status belum Done, dan belum pernah di notifikasi
-        if (jadwal.waktu_mulai === jamSekarang && jadwal.status !== 'Done' && !jadwalYangSudahDiberitahu.includes(jadwal.id_jadwal)) {
-            
-            // [DIUBAH] Minta main.js yang memunculkan notifikasi
-            ipcRenderer.send('tampilkan-notifikasi', {
-                title: "Waktunya Fokus! 🎯",
-                body: `${jadwal.judul_aktivitas}\nJam: ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}\nPrioritas: ${jadwal.prioritas}`
-            });
-            
-            // Catat ID jadwal ini agar 10 detik kemudian tidak bunyi lagi
-            jadwalYangSudahDiberitahu.push(jadwal.id_jadwal);
+        // A. Cek Waktu Mulai
+        if (jadwal.waktu_mulai === jamSekarang && jadwal.status !== 'Done' && !jadwalDimulaiNotif.includes(jadwal.id_jadwal)) {
+            tampilkanNotifKustom(
+                "▶️ Waktunya Memulai!", 
+                `${jadwal.judul_aktivitas}<br>Jam: ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}`, 
+                'mulai'
+            );
+            jadwalDimulaiNotif.push(jadwal.id_jadwal);
+        }
+
+        // B. Cek Waktu Selesai
+        if (jadwal.waktu_selesai === jamSekarang && !jadwalSelesaiNotif.includes(jadwal.id_jadwal)) {
+            tampilkanNotifKustom(
+                "🛑 Waktu Habis!", 
+                `Fokus untuk aktivitas <strong>${jadwal.judul_aktivitas}</strong> telah berakhir. Ayo evaluasi progresmu!`, 
+                'selesai'
+            );
+            jadwalSelesaiNotif.push(jadwal.id_jadwal);
         }
     });
-}, 10000); // Mengecek setiap 10.000 milidetik (10 detik)
+}, 10000);
 
 
 // --- SISTEM NAVIGASI TAB ---
