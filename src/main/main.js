@@ -21,7 +21,7 @@ ipcMain.on('tampilkan-notifikasi', (event, data) => {
 });
 
 // 1. Inisialisasi Database
-const dbPath = path.join(__dirname, "database.db");
+const dbPath = path.join(__dirname, "../../database.db");
 const db = new Database(dbPath);
 
 // 2. Membuat Tabel dan Mengisi Data Default Kategori
@@ -89,7 +89,7 @@ db.exec(`
     );
 
     -- Berikan nilai default saat aplikasi pertama kali diinstal
-    INSERT OR IGNORE INTO pengaturan_sistem (kunci, nilai) VALUES ('suara_notif', 'sounds/suara-1.mp3');
+    INSERT OR IGNORE INTO pengaturan_sistem (kunci, nilai) VALUES ('suara_notif', '../assets/sounds/suara-1.mp3');
     INSERT OR IGNORE INTO pengaturan_sistem (kunci, nilai) VALUES ('mute_notif', '0');
 `);
 
@@ -213,7 +213,7 @@ function createWindow() {
     });
 
     win.setMenuBarVisibility(false);
-    win.loadFile("index.html");
+    win.loadFile("../renderer/index.html");
 }
 
 app.whenReady().then(() => {

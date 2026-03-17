@@ -26,6 +26,11 @@ CREATE TABLE IF NOT EXISTS "milestone" (
 	PRIMARY KEY("id_milestone" AUTOINCREMENT),
 	FOREIGN KEY("id_proyek") REFERENCES "proyek"("id_proyek") ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS "pengaturan_sistem" (
+	"kunci"	TEXT,
+	"nilai"	TEXT NOT NULL,
+	PRIMARY KEY("kunci")
+);
 CREATE TABLE IF NOT EXISTS "proyek" (
 	"id_proyek"	INTEGER,
 	"nama_proyek"	TEXT NOT NULL,
