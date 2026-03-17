@@ -1,7 +1,8 @@
 const { app, BrowserWindow, ipcMain, Notification } = require("electron"); 
 const path = require("path");
 require("electron-reload")(path.join(__dirname, "../../"));
-const Database = require("better-sqlite3");
+// [BARU] Panggil modul database yang sudah dipisah
+const db = require("./database");
 
 // [BARU] Daftarkan ID Aplikasi agar Windows mengizinkan notifikasi
 app.setAppUserModelId("Aplikasi.Jadwal.Ku"); 
@@ -24,74 +25,7 @@ ipcMain.on('tampilkan-notifikasi', (event, data) => {
 const dbPath = path.join(__dirname, "../../database.db");
 const db = new Database(dbPath);
 
-// 2. Membuat Tabel dan Mengisi Data Default Kategori
-db.exec(`
-    CREATE TABLE IF NOT EXISTS kategori (
-        id_kategori INTEGER PRIMARY KEY AUTOINCREMENT,
-        nama_kategori TEXT NOT NULL,
-        kode_warna TEXT NOT NULL
-    );
-    
-    CREATE TABLE IF NOT EXISTS jadwal (
-        id_jadwal INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_kategori INTEGER,
-        judul_aktivitas TEXT NOT NULL,
-        tanggal TEXT NOT NULL,
-        waktu_mulai TEXT NOT NULL,
-        waktu_selesai TEXT NOT NULL,
-        prioritas TEXT DEFAULT 'Sedang', -- [BARU] Kolom prioritas
-        status TEXT DEFAULT 'To Do',     -- [DIUBAH] Default status untuk Kanban
-        is_berulang INTEGER DEFAULT 0,
-        FOREIGN KEY (id_kategori) REFERENCES kategori (id_kategori)
-    );
 
-
-    -- Masukkan kategori default ini jika tabel kategori masih kosong
-    INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (1, 'Belajar', '#89b4fa');
-    INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (2, 'Istirahat', '#f9e2af');
-    INSERT OR IGNORE INTO kategori (id_kategori, nama_kategori, kode_warna) VALUES (3, 'Hiburan', '#a6e3a1');
-
-    CREATE TABLE IF NOT EXISTS rutinitas (
-        id_rutinitas INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_kategori INTEGER,
-        judul_aktivitas TEXT NOT NULL,
-        waktu_mulai TEXT NOT NULL,
-        waktu_selesai TEXT NOT NULL,
-        prioritas TEXT DEFAULT 'Sedang'
-    );
-
-    -- Contoh Rutinitas Default (Otomatis masuk ke jadwal setiap harinya)
-    INSERT OR IGNORE INTO rutinitas (id_rutinitas, id_kategori, judul_aktivitas, waktu_mulai, waktu_selesai, prioritas) 
-    VALUES (1, 2, 'Tidur & Istirahat', '22:00', '05:00', 'Tinggi');
-    
-    INSERT OR IGNORE INTO rutinitas (id_rutinitas, id_kategori, judul_aktivitas, waktu_mulai, waktu_selesai, prioritas) 
-    VALUES (2, 2, 'Makan Siang & Istirahat', '12:00', '13:00', 'Sedang');
-
-
-    CREATE TABLE IF NOT EXISTS proyek (
-        id_proyek INTEGER PRIMARY KEY AUTOINCREMENT,
-        nama_proyek TEXT NOT NULL,
-        target_tanggal TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS milestone (
-        id_milestone INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_proyek INTEGER,
-        nama_tugas TEXT NOT NULL,
-        is_selesai INTEGER DEFAULT 0,
-        FOREIGN KEY (id_proyek) REFERENCES proyek (id_proyek) ON DELETE CASCADE
-    );
-
-    -- (Tabel yang sudah ada biarkan saja, tambahkan kode ini di bagian paling bawah dalam db.exec) --
-    CREATE TABLE IF NOT EXISTS pengaturan_sistem (
-        kunci TEXT PRIMARY KEY,
-        nilai TEXT NOT NULL
-    );
-
-    -- Berikan nilai default saat aplikasi pertama kali diinstal
-    INSERT OR IGNORE INTO pengaturan_sistem (kunci, nilai) VALUES ('suara_notif', '../assets/sounds/suara-1.mp3');
-    INSERT OR IGNORE INTO pengaturan_sistem (kunci, nilai) VALUES ('mute_notif', '0');
-`);
 
 // --- LOGIKA BARU: MENERIMA DATA DARI RENDERER LALU SIMPAN KE DATABASE ---
 ipcMain.on('simpan-jadwal', (event, data) => {
