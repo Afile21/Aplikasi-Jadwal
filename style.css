@@ -85,9 +85,12 @@ body {
 /* --- AREA UTAMA --- */
 .main-content {
     flex: 1;
-    padding: 30px 40px;
-    display: flex;
-    flex-direction: column;
+    padding: 30px;
+    background-color: var(--bg-main);
+    
+    /* [BARU] Tambahkan 2 baris ini agar bisa di-scroll ke bawah */
+    height: 100vh; 
+    overflow-y: auto; 
 }
 
 .main-header {
@@ -367,10 +370,29 @@ body {
 .kanban-list {
     flex: 1;
     padding: 15px;
-    overflow-y: auto;
+    
+    /* [BARU] Pastikan 2 baris ini ada */
+    overflow-y: auto; 
+    max-height: calc(100vh - 200px); /* Mencegah kolom tembus ke bawah layar */
+    
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+/* Opsional: Mempercantik bentuk Scrollbar agar lebih elegan (Taruh di paling bawah style.css) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-main); 
+}
+::-webkit-scrollbar-thumb {
+    background: var(--text-secondary); 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color); 
 }
 
 /* Modifikasi Kartu Jadwal untuk Kanban */
