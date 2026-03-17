@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Notification } = require("electron"); 
 const path = require("path");
 require("electron-reload")(path.join(__dirname, "../../"));
+
 // [BARU] Panggil modul database yang sudah dipisah
 const db = require("./database");
 
@@ -22,9 +23,8 @@ ipcMain.on('tampilkan-notifikasi', (event, data) => {
 });
 
 // 1. Inisialisasi Database
-const dbPath = path.join(__dirname, "../../database.db");
-const db = new Database(dbPath);
 
+//
 
 
 // --- LOGIKA BARU: MENERIMA DATA DARI RENDERER LALU SIMPAN KE DATABASE ---
