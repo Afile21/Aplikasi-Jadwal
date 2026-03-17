@@ -124,6 +124,30 @@
                     </div>
 
                 </div>
+                <div class="jadwal-card settings-box" style="margin-top: 20px;">
+                    <h3>🔊 Pengaturan Notifikasi</h3>
+                    <form id="form-pengaturan-notif" class="settings-form form-col">
+                        
+                        <div class="form-group">
+                            <label>Pilih Suara Notifikasi</label>
+                            <select id="input-suara-notif" class="input-setting">
+                                <option value="sounds/suara-1.mp3">Suara 1 (Default)</option>
+                                <option value="sounds/suara-2.mp3">Suara 2 (Alternatif)</option>
+                                <option value="sounds/suara-3.mp3">Suara 3 (Alarm)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                            <input type="checkbox" id="input-mute-notif" style="width: 20px; height: 20px; accent-color: var(--accent-color); cursor: pointer;">
+                            <label for="input-mute-notif" style="cursor: pointer;">Mute Suara (Hanya tampilkan Pop-up Visual)</label>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="button" id="btn-tes-suara" style="padding: 10px; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--text-secondary); border-radius: 6px; cursor: pointer; flex: 1;">▶️ Tes Suara</button>
+                            <button type="submit" class="btn-tambah-setting" style="flex: 2;">Simpan Preferensi</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
         </main>

@@ -81,6 +81,16 @@ db.exec(`
         is_selesai INTEGER DEFAULT 0,
         FOREIGN KEY (id_proyek) REFERENCES proyek (id_proyek) ON DELETE CASCADE
     );
+
+    -- (Tabel yang sudah ada biarkan saja, tambahkan kode ini di bagian paling bawah dalam db.exec) --
+    CREATE TABLE IF NOT EXISTS pengaturan_sistem (
+        kunci TEXT PRIMARY KEY,
+        nilai TEXT NOT NULL
+    );
+
+    -- Berikan nilai default saat aplikasi pertama kali diinstal
+    INSERT OR IGNORE INTO pengaturan_sistem (kunci, nilai) VALUES ('suara_notif', 'sounds/suara-1.mp3');
+    INSERT OR IGNORE INTO pengaturan_sistem (kunci, nilai) VALUES ('mute_notif', '0');
 `);
 
 // --- LOGIKA BARU: MENERIMA DATA DARI RENDERER LALU SIMPAN KE DATABASE ---
@@ -373,5 +383,27 @@ ipcMain.on('ambil-kategori-dropdown', (event) => {
     try {
         const kategori = db.prepare(`SELECT * FROM kategori`).all();
         event.reply('data-kategori-dropdown', kategori);
+    } catch (err) { console.error(err); }
+});
+
+
+// --- SISTEM PENGATURAN NOTIFIKASI ---
+ipcMain.on('ambil-pengaturan-notif', (event) => {
+    try {
+        const suara = db.prepare(`SELECT nilai FROM pengaturan_sistem WHERE kunci = 'suara_notif'`).get();
+        const mute = db.prepare(`SELECT nilai FROM pengaturan_sistem WHERE kunci = 'mute_notif'`).get();
+        
+        event.reply('data-pengaturan-notif', {
+            suara: suara ? suara.nilai : 'sounds/suara-1.mp3',
+            mute: mute ? mute.nilai : '0'
+        });
+    } catch (err) { console.error(err); }
+});
+
+ipcMain.on('simpan-pengaturan-notif', (event, data) => {
+    try {
+        db.prepare(`UPDATE pengaturan_sistem SET nilai = ? WHERE kunci = 'suara_notif'`).run(data.suara);
+        db.prepare(`UPDATE pengaturan_sistem SET nilai = ? WHERE kunci = 'mute_notif'`).run(data.mute);
+        event.reply('update-notif-sukses');
     } catch (err) { console.error(err); }
 });

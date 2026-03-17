@@ -252,9 +252,17 @@ let jadwalSelesaiNotif = [];
 // Variabel ini sementara kita tulis manual. 
 // Nanti di tahap integrasi pengaturan, nilai ini akan diganti otomatis dari database.
 let suaraNotifPilihan = 'sounds/suara-1.mp3'; 
+let isMuteNotif = false; // [BARU] Variabel untuk mendeteksi apakah disenyapkan
 
 function tampilkanNotifKustom(judul, pesan, tipe) {
-    // 1. Mainkan Suara dari folder sounds
+    // 1. Mainkan Suara (Hanya jika tidak di-mute)
+    if (!isMuteNotif) {
+        try {
+            const audio = new Audio(suaraNotifPilihan); 
+            audio.play();
+        } catch (err) { console.error("Gagal memutar suara:", err); }
+    }
+    // 1.2. Mainkan Suara dari folder sounds
     try {
         const audio = new Audio(suaraNotifPilihan); 
         audio.play();
@@ -712,3 +720,43 @@ ipcRenderer.on('data-kategori-dropdown', (event, kategoriList) => {
 
 // Panggil fungsi ini saat aplikasi pertama kali dibuka
 loadKategori();
+
+
+// ==========================================
+// LOGIKA MENU PENGATURAN NOTIFIKASI
+// ==========================================
+// Minta data notif saat aplikasi pertama kali dibuka
+ipcRenderer.send('ambil-pengaturan-notif');
+
+ipcRenderer.on('data-pengaturan-notif', (event, data) => {
+    // Terapkan ke variabel sistem
+    suaraNotifPilihan = data.suara;
+    isMuteNotif = (data.mute === '1');
+
+    // Terapkan juga ke tampilan UI di menu Pengaturan
+    const selectSuara = document.getElementById('input-suara-notif');
+    const checkMute = document.getElementById('input-mute-notif');
+    if (selectSuara) selectSuara.value = data.suara;
+    if (checkMute) checkMute.checked = isMuteNotif;
+});
+
+// Saat tombol "Simpan Preferensi" diklik
+document.getElementById('form-pengaturan-notif').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const suara = document.getElementById('input-suara-notif').value;
+    const mute = document.getElementById('input-mute-notif').checked ? '1' : '0';
+    ipcRenderer.send('simpan-pengaturan-notif', { suara, mute });
+});
+
+// Konfirmasi sukses tersimpan
+ipcRenderer.on('update-notif-sukses', () => {
+    alert("Preferensi notifikasi berhasil disimpan!");
+    ipcRenderer.send('ambil-pengaturan-notif'); // Muat ulang variabel
+});
+
+// Fitur Tes Suara langsung dari pilihan Dropdown
+document.getElementById('btn-tes-suara').addEventListener('click', () => {
+    const suaraTes = document.getElementById('input-suara-notif').value;
+    const audio = new Audio(suaraTes);
+    audio.play().catch(e => alert("Gagal memutar suara. Pastikan file " + suaraTes + " ada di dalam folder 'sounds'."));
+});
