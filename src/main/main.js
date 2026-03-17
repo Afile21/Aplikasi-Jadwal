@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, Notification } = require("electron"); 
 const path = require("path");
-require("electron-reload")(__dirname);
+require("electron-reload")(path.join(__dirname, "../../"));
 const Database = require("better-sqlite3");
 
 // [BARU] Daftarkan ID Aplikasi agar Windows mengizinkan notifikasi
@@ -213,7 +213,7 @@ function createWindow() {
     });
 
     win.setMenuBarVisibility(false);
-    win.loadFile("../renderer/index.html");
+    win.loadFile(path.join(__dirname, "../renderer/index.html"));
 }
 
 app.whenReady().then(() => {
