@@ -300,24 +300,29 @@ setInterval(() => {
     const jamSekarang = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
 
     jadwalListGlobal.forEach(jadwal => {
+
         // A. Cek Waktu Mulai
         if (jadwal.waktu_mulai === jamSekarang && jadwal.status !== 'Done' && !jadwalDimulaiNotif.includes(jadwal.id_jadwal)) {
+            
+            jadwalDimulaiNotif.push(jadwal.id_jadwal); // <--- PINDAHKAN KE SINI
+
             tampilkanNotifKustom(
                 "▶️ Waktunya Memulai!", 
                 `${jadwal.judul_aktivitas}<br>Jam: ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}`, 
                 'mulai'
             );
-            jadwalDimulaiNotif.push(jadwal.id_jadwal);
         }
 
         // B. Cek Waktu Selesai
         if (jadwal.waktu_selesai === jamSekarang && !jadwalSelesaiNotif.includes(jadwal.id_jadwal)) {
+            
+            jadwalSelesaiNotif.push(jadwal.id_jadwal); // <--- PINDAHKAN KE SINI
+
             tampilkanNotifKustom(
                 "🛑 Waktu Habis!", 
                 `Fokus untuk aktivitas <strong>${jadwal.judul_aktivitas}</strong> telah berakhir. Ayo evaluasi progresmu!`, 
                 'selesai'
             );
-            jadwalSelesaiNotif.push(jadwal.id_jadwal);
         }
     });
 }, 10000);
