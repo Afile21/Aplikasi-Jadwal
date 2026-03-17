@@ -7,6 +7,12 @@ const db = require("./database");
 
 const initIpcJadwal = require("./ipcJadwal"); // Panggil modul IPC untuk jadwal
 initIpcJadwal();
+
+// [BARU] Panggil dan jalankan modul IPC Proyek
+const initIpcProyek = require("./ipcProyek");
+initIpcProyek();
+
+
 // [BARU] Daftarkan ID Aplikasi agar Windows mengizinkan notifikasi
 app.setAppUserModelId("Aplikasi.Jadwal.Ku"); 
 
@@ -112,51 +118,6 @@ ipcMain.on('ambil-statistik', (event) => {
     } catch (err) { console.error(err); }
 });
 
-// --- SISTEM PROYEK (GOALS) ---
-ipcMain.on('ambil-proyek', (event) => {
-    try {
-        const proyekList = db.prepare(`SELECT * FROM proyek`).all();
-        // Ambil milestone untuk setiap proyek
-        proyekList.forEach(p => {
-            p.milestones = db.prepare(`SELECT * FROM milestone WHERE id_proyek = ?`).all(p.id_proyek);
-        });
-        event.reply('data-proyek', proyekList);
-    } catch (err) { console.error(err); }
-});
-
-// --- MENYIMPAN PROYEK ASLI ---
-ipcMain.on('tambah-proyek', (event, data) => {
-    try {
-        // 1. Simpan nama dan target proyeknya dulu
-        const insertProyek = db.prepare(`INSERT INTO proyek (nama_proyek, target_tanggal) VALUES (?, ?)`).run(data.nama, data.target);
-        const idBaru = insertProyek.lastInsertRowid; // Ambil ID proyek yang baru saja dibuat
-        
-        // 2. Simpan semua langkah-langkahnya (milestones) ke proyek tersebut
-        const insertMilestone = db.prepare(`INSERT INTO milestone (id_proyek, nama_tugas) VALUES (?, ?)`);
-        const insertBanyak = db.transaction((milestones) => {
-            for (const ms of milestones) {
-                insertMilestone.run(idBaru, ms);
-            }
-        });
-        insertBanyak(data.milestones);
-        
-        event.reply('update-proyek-sukses');
-    } catch (err) { console.error(err); }
-});
-
-// --- MENGHAPUS PROYEK ---
-ipcMain.on('hapus-proyek', (event, idProyek) => {
-    try {
-        // Karena di schema kita pakai ON DELETE CASCADE, menghapus proyek otomatis menghapus semua milestone-nya
-        db.prepare(`DELETE FROM proyek WHERE id_proyek = ?`).run(idProyek);
-        event.reply('update-proyek-sukses');
-    } catch (err) { console.error(err); }
-});
-
-ipcMain.on('update-milestone', (event, data) => {
-    db.prepare(`UPDATE milestone SET is_selesai = ? WHERE id_milestone = ?`).run(data.is_selesai, data.id);
-    event.reply('update-proyek-sukses');
-});
 
 
 // ==========================================
