@@ -1,4 +1,3 @@
-const { ipcRenderer } = require('electron'); // Memanggil kurir komunikasi
 const Sortable = require('sortablejs'); // Memanggil pustaka drag-and-drop
 const Chart = require('chart.js/auto');
 let grafikInstance = null; // Menyimpan grafik agar bisa di-refresh
@@ -63,20 +62,20 @@ formJadwal.addEventListener('submit', (e) => {
     // --- CEK MODE EDIT ATAU TAMBAH BARU ---
     if (editId) {
         dataJadwal.id = editId; // Masukkan ID jadwal yang mau di edit
-        ipcRenderer.send('edit-jadwal', dataJadwal);
+        window.electronAPI.send('edit-jadwal', dataJadwal);
     } else {
-        ipcRenderer.send('simpan-jadwal', dataJadwal);
+        window.electronAPI.send('simpan-jadwal', dataJadwal);
     }
 });
 
 // --- MENDENGARKAN JAWABAN DARI MAIN.JS ---
-ipcRenderer.on('simpan-sukses', (event, pesan) => {
+window.electronAPI.receive('simpan-sukses', (event, pesan) => {
     modalTambah.classList.remove('show'); // Tutup pop-up
     formJadwal.reset(); // Kosongkan form
     loadJadwal(); // <--- Refresh data di layar secara otomatis!
 });
 
-ipcRenderer.on('simpan-gagal', (event, pesan) => {
+window.electronAPI.receive('simpan-gagal', (event, pesan) => {
     alert(pesan); // Munculkan notifikasi gagal
 });
 
@@ -109,7 +108,7 @@ function updateTeksTanggal() {
 function loadJadwal() {
     const tanggalDB = getTanggalFormatDB(tanggalAktif);
     updateTeksTanggal(); // Ubah teks judul H1
-    ipcRenderer.send('ambil-jadwal', tanggalDB); // Minta data ke database
+    window.electronAPI.send('ambil-jadwal', tanggalDB); // Minta data ke database
 }
 
 // 4. Logika Tombol Panah (Kemarin & Besok)
@@ -124,7 +123,7 @@ document.getElementById('btn-besok').addEventListener('click', () => {
 });
 
 // 3. Menerima data dari main.js dan merakit HTML-nya
-ipcRenderer.on('data-jadwal', (event, jadwalList) => {
+window.electronAPI.receive('data-jadwal', (event, jadwalList) => {
     jadwalListGlobal = jadwalList; 
 
     const listTodo = document.getElementById('list-todo');
@@ -202,14 +201,14 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
         dropdown.addEventListener('change', (e) => {
             const idJadwal = e.target.getAttribute('data-id');
             const statusBaru = e.target.value;
-            ipcRenderer.send('update-status', { id: idJadwal, status: statusBaru });
+            window.electronAPI.send('update-status', { id: idJadwal, status: statusBaru });
         });
     });
 
     // Tambahkan kembali event listener untuk hapus & edit seperti sebelumnya
     document.querySelectorAll('.btn-hapus').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            if (confirm("Hapus jadwal ini?")) ipcRenderer.send('hapus-jadwal', btn.getAttribute('data-id'));
+            if (confirm("Hapus jadwal ini?")) window.electronAPI.send('hapus-jadwal', btn.getAttribute('data-id'));
         });
     });
 
@@ -234,7 +233,7 @@ ipcRenderer.on('data-jadwal', (event, jadwalList) => {
 });
 
 // Mendengarkan jika update database sukses, maka otomatis refresh layar
-ipcRenderer.on('update-sukses', () => {
+window.electronAPI.receive('update-sukses', () => {
     loadJadwal(); 
 });
 
@@ -364,17 +363,17 @@ document.getElementById('nav-beranda').addEventListener('click', (e) => {
 
 document.getElementById('nav-proyek').addEventListener('click', (e) => {
     e.preventDefault(); gantiTab(viewProyek, e.target);
-    ipcRenderer.send('ambil-proyek'); // Minta data proyek ke main.js
+    window.electronAPI.send('ambil-proyek'); // Minta data proyek ke main.js
 });
 
 document.getElementById('nav-statistik').addEventListener('click', (e) => {
     e.preventDefault(); gantiTab(viewStatistik, e.target);
-    ipcRenderer.send('ambil-statistik'); // Minta data statistik ke main.js
+    window.electronAPI.send('ambil-statistik'); // Minta data statistik ke main.js
 });
 
 
 // --- MENERIMA DATA STATISTIK & RENDER GRAFIK ---
-ipcRenderer.on('data-statistik', (event, data) => {
+window.electronAPI.receive('data-statistik', (event, data) => {
     // 1. Update UI Skor
     document.getElementById('teks-skor-hari-ini').innerText = `${data.skor.hariIni} Poin`;
 
@@ -432,7 +431,7 @@ ipcRenderer.on('data-statistik', (event, data) => {
 });
 
 // --- MENERIMA DATA PROYEK (GOALS) ---
-ipcRenderer.on('data-proyek', (event, proyekList) => {
+window.electronAPI.receive('data-proyek', (event, proyekList) => {
     const container = document.getElementById('list-proyek-container');
     container.innerHTML = '';
 
@@ -488,7 +487,7 @@ ipcRenderer.on('data-proyek', (event, proyekList) => {
         box.addEventListener('change', (e) => {
             const id = e.target.getAttribute('data-id');
             const isSelesai = e.target.checked ? 1 : 0;
-            ipcRenderer.send('update-milestone', { id, is_selesai: isSelesai });
+            window.electronAPI.send('update-milestone', { id, is_selesai: isSelesai });
         });
     });
 
@@ -497,15 +496,15 @@ ipcRenderer.on('data-proyek', (event, proyekList) => {
         btn.addEventListener('click', (e) => {
             const idProyek = e.currentTarget.getAttribute('data-id');
             if(confirm("Apakah kamu yakin ingin menghapus tujuan ini secara permanen?")) {
-                ipcRenderer.send('hapus-proyek', idProyek);
+                window.electronAPI.send('hapus-proyek', idProyek);
             }
         });
     });
 });
 
 // Refresh otomatis jika milestone diupdate
-ipcRenderer.on('update-proyek-sukses', () => {
-    ipcRenderer.send('ambil-proyek');
+window.electronAPI.receive('update-proyek-sukses', () => {
+    window.electronAPI.send('ambil-proyek');
 });
 
 // ==========================================
@@ -568,7 +567,7 @@ formProyek.addEventListener('submit', (e) => {
     }
 
     // Kirim data ke main.js
-    ipcRenderer.send('tambah-proyek', { nama, target, milestones });
+    window.electronAPI.send('tambah-proyek', { nama, target, milestones });
     modalProyek.classList.remove('show');
 });
 
@@ -599,7 +598,7 @@ function aktifkanDragAndDrop() {
             kartu.querySelector('.status-dropdown').value = statusBaru;
 
             // Kirim perintah ke main.js untuk langsung menyimpan posisi baru ke Database!
-            ipcRenderer.send('update-status', { id: idJadwal, status: statusBaru });
+            window.electronAPI.send('update-status', { id: idJadwal, status: statusBaru });
         }
     };
 
@@ -621,11 +620,11 @@ aktifkanDragAndDrop();
 document.getElementById('nav-pengaturan').addEventListener('click', (e) => {
     e.preventDefault(); 
     gantiTab(viewPengaturan, e.target); // Menggunakan fungsi gantiTab yang sudah ada
-    ipcRenderer.send('ambil-pengaturan'); // Minta data terbaru dari database
+    window.electronAPI.send('ambil-pengaturan'); // Minta data terbaru dari database
 });
 
 // Menerima dan merender data Kategori & Rutinitas
-ipcRenderer.on('data-pengaturan', (event, data) => {
+window.electronAPI.receive('data-pengaturan', (event, data) => {
     const wadahKategori = document.getElementById('list-kategori-container');
     const wadahRutinitas = document.getElementById('list-rutinitas-container');
     
@@ -657,14 +656,14 @@ ipcRenderer.on('data-pengaturan', (event, data) => {
     // Event Listener Hapus Kategori
     document.querySelectorAll('.btn-hapus-kat').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            if(confirm("Hapus kategori ini?")) ipcRenderer.send('hapus-kategori', e.target.getAttribute('data-id'));
+            if(confirm("Hapus kategori ini?")) window.electronAPI.send('hapus-kategori', e.target.getAttribute('data-id'));
         });
     });
 
     // Event Listener Hapus Rutinitas
     document.querySelectorAll('.btn-hapus-rutin').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            if(confirm("Hapus rutinitas ini? Jadwal otomatis tidak akan muncul lagi besok.")) ipcRenderer.send('hapus-rutinitas', e.currentTarget.getAttribute('data-id'));
+            if(confirm("Hapus rutinitas ini? Jadwal otomatis tidak akan muncul lagi besok.")) window.electronAPI.send('hapus-rutinitas', e.currentTarget.getAttribute('data-id'));
         });
     });
 });
@@ -674,7 +673,7 @@ document.getElementById('form-tambah-kategori').addEventListener('submit', (e) =
     e.preventDefault();
     const nama = document.getElementById('input-nama-kat').value;
     const warna = document.getElementById('input-warna-kat').value;
-    ipcRenderer.send('tambah-kategori', { nama, warna });
+    window.electronAPI.send('tambah-kategori', { nama, warna });
     e.target.reset();
 });
 
@@ -684,18 +683,18 @@ document.getElementById('form-tambah-rutinitas').addEventListener('submit', (e) 
     const judul = document.getElementById('input-judul-rutin').value;
     const mulai = document.getElementById('input-mulai-rutin').value;
     const selesai = document.getElementById('input-selesai-rutin').value;
-    ipcRenderer.send('tambah-rutinitas', { judul, mulai, selesai });
+    window.electronAPI.send('tambah-rutinitas', { judul, mulai, selesai });
     e.target.reset();
 });
 
 // Refresh halaman otomatis jika ada perubahan
-ipcRenderer.on('update-pengaturan-sukses', () => {
-    ipcRenderer.send('ambil-pengaturan');
+window.electronAPI.receive('update-pengaturan-sukses', () => {
+    window.electronAPI.send('ambil-pengaturan');
    loadKategori(); // Memperbarui dropdown kategori di modal tambah jadwal juga!
 });
 
 // Peringatan jika gagal menghapus kategori
-ipcRenderer.on('gagal-hapus-kategori', (event, pesan) => {
+window.electronAPI.receive('gagal-hapus-kategori', (event, pesan) => {
     alert(pesan);
 });
 
@@ -703,10 +702,10 @@ ipcRenderer.on('gagal-hapus-kategori', (event, pesan) => {
 // LOGIKA DROPDOWN KATEGORI DINAMIS
 // ==========================================
 function loadKategori() {
-    ipcRenderer.send('ambil-kategori-dropdown');
+    window.electronAPI.send('ambil-kategori-dropdown');
 }
 
-ipcRenderer.on('data-kategori-dropdown', (event, kategoriList) => {
+window.electronAPI.receive('data-kategori-dropdown', (event, kategoriList) => {
     const select = document.getElementById('input-kategori');
     select.innerHTML = ''; // Kosongkan dulu
     
@@ -726,9 +725,9 @@ loadKategori();
 // LOGIKA MENU PENGATURAN NOTIFIKASI
 // ==========================================
 // Minta data notif saat aplikasi pertama kali dibuka
-ipcRenderer.send('ambil-pengaturan-notif');
+window.electronAPI.send('ambil-pengaturan-notif');
 
-ipcRenderer.on('data-pengaturan-notif', (event, data) => {
+window.electronAPI.receive('data-pengaturan-notif', (event, data) => {
     // Terapkan ke variabel sistem
     suaraNotifPilihan = data.suara;
     isMuteNotif = (data.mute === '1');
@@ -745,13 +744,13 @@ document.getElementById('form-pengaturan-notif').addEventListener('submit', (e) 
     e.preventDefault();
     const suara = document.getElementById('input-suara-notif').value;
     const mute = document.getElementById('input-mute-notif').checked ? '1' : '0';
-    ipcRenderer.send('simpan-pengaturan-notif', { suara, mute });
+    window.electronAPI.send('simpan-pengaturan-notif', { suara, mute });
 });
 
 // Konfirmasi sukses tersimpan
-ipcRenderer.on('update-notif-sukses', () => {
+window.electronAPI.receive('update-notif-sukses', () => {
     alert("Preferensi notifikasi berhasil disimpan!");
-    ipcRenderer.send('ambil-pengaturan-notif'); // Muat ulang variabel
+    window.electronAPI.send('ambil-pengaturan-notif'); // Muat ulang variabel
 });
 
 // Fitur Tes Suara langsung dari pilihan Dropdown
