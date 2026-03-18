@@ -34,8 +34,9 @@ function createWindow() {
         width: 1000,
         height: 700,
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
+            nodeIntegration: false, // [UBAH INI] Matikan akses langsung ke Node.js dari UI
+            contextIsolation: true, // [UBAH INI] Lindungi objek window global agar tidak tercemar
+            preload: path.join(__dirname, "preload.js") // [TAMBAHAN BARU] Siapkan jembatan komunikasi
         },
     });
 
