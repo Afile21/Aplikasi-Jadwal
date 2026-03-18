@@ -448,3 +448,46 @@ btnToggleTema.addEventListener('click', () => {
         localStorage.setItem('tema-jadwalku', 'light');
     }
 });
+
+// ==========================================
+// SISTEM NAVIGASI MOBILE (HAMBURGER MENU)
+// ==========================================
+const btnHamburger = document.getElementById('btn-hamburger');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+if (btnHamburger && sidebar) {
+    btnHamburger.addEventListener('click', () => {
+        sidebar.classList.toggle('terbuka');
+        
+        // Memberikan efek blur pada layar utama saat sidebar terbuka (Glassmorphism effect)
+        if (sidebar.classList.contains('terbuka')) {
+            mainContent.style.filter = 'blur(4px)';
+            mainContent.style.pointerEvents = 'none'; // Mencegah klik elemen di belakang
+        } else {
+            mainContent.style.filter = 'none';
+            mainContent.style.pointerEvents = 'auto';
+        }
+    });
+
+    // Menutup sidebar jika user mengklik area di luar menu (layar utama)
+    document.addEventListener('click', (e) => {
+        // Jika yang diklik bukan sidebar dan bukan tombol hamburger, dan sidebar sedang terbuka
+        if (!sidebar.contains(e.target) && !btnHamburger.contains(e.target) && sidebar.classList.contains('terbuka')) {
+            sidebar.classList.remove('terbuka');
+            mainContent.style.filter = 'none';
+            mainContent.style.pointerEvents = 'auto';
+        }
+    });
+
+    // Otomatis menutup sidebar setelah menu navigasi dipilih (klik menu)
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth <= 850) { // Hanya berlaku di mode layar kecil
+                sidebar.classList.remove('terbuka');
+                mainContent.style.filter = 'none';
+                mainContent.style.pointerEvents = 'auto';
+            }
+        });
+    });
+}
