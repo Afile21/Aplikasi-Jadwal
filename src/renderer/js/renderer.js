@@ -67,13 +67,13 @@ formJadwal.addEventListener('submit', (e) => {
 });
 
 // --- MENDENGARKAN JAWABAN DARI MAIN.JS ---
-window.electronAPI.receive('simpan-sukses', (event, pesan) => {
+window.electronAPI.receive('simpan-sukses', (pesan) => {
     modalTambah.classList.remove('show'); // Tutup pop-up
     formJadwal.reset(); // Kosongkan form
     loadJadwal(); // <--- Refresh data di layar secara otomatis!
 });
 
-window.electronAPI.receive('simpan-gagal', (event, pesan) => {
+window.electronAPI.receive('simpan-gagal', (pesan) => {
     alert(pesan); // Munculkan notifikasi gagal
 });
 
@@ -121,7 +121,7 @@ document.getElementById('btn-besok').addEventListener('click', () => {
 });
 
 // 3. Menerima data dari main.js dan merakit HTML-nya
-window.electronAPI.receive('data-jadwal', (event, jadwalList) => {
+window.electronAPI.receive('data-jadwal', (jadwalList) => {
     jadwalListGlobal = jadwalList; 
 
     const listTodo = document.getElementById('list-todo');
@@ -371,7 +371,7 @@ document.getElementById('nav-statistik').addEventListener('click', (e) => {
 
 
 // --- MENERIMA DATA STATISTIK & RENDER GRAFIK ---
-window.electronAPI.receive('data-statistik', (event, data) => {
+window.electronAPI.receive('data-statistik', (data) => {
     // 1. Update UI Skor
     document.getElementById('teks-skor-hari-ini').innerText = `${data.skor.hariIni} Poin`;
 
@@ -429,7 +429,7 @@ window.electronAPI.receive('data-statistik', (event, data) => {
 });
 
 // --- MENERIMA DATA PROYEK (GOALS) ---
-window.electronAPI.receive('data-proyek', (event, proyekList) => {
+window.electronAPI.receive('data-proyek', (proyekList) => {
     const container = document.getElementById('list-proyek-container');
     container.innerHTML = '';
 
@@ -622,7 +622,7 @@ document.getElementById('nav-pengaturan').addEventListener('click', (e) => {
 });
 
 // Menerima dan merender data Kategori & Rutinitas
-window.electronAPI.receive('data-pengaturan', (event, data) => {
+window.electronAPI.receive('data-pengaturan', (data) => {
     const wadahKategori = document.getElementById('list-kategori-container');
     const wadahRutinitas = document.getElementById('list-rutinitas-container');
     
@@ -692,7 +692,7 @@ window.electronAPI.receive('update-pengaturan-sukses', () => {
 });
 
 // Peringatan jika gagal menghapus kategori
-window.electronAPI.receive('gagal-hapus-kategori', (event, pesan) => {
+window.electronAPI.receive('gagal-hapus-kategori', (pesan) => {
     alert(pesan);
 });
 
@@ -703,7 +703,7 @@ function loadKategori() {
     window.electronAPI.send('ambil-kategori-dropdown');
 }
 
-window.electronAPI.receive('data-kategori-dropdown', (event, kategoriList) => {
+window.electronAPI.receive('data-kategori-dropdown', (kategoriList) => {
     const select = document.getElementById('input-kategori');
     select.innerHTML = ''; // Kosongkan dulu
     
@@ -725,7 +725,7 @@ loadKategori();
 // Minta data notif saat aplikasi pertama kali dibuka
 window.electronAPI.send('ambil-pengaturan-notif');
 
-window.electronAPI.receive('data-pengaturan-notif', (event, data) => {
+window.electronAPI.receive('data-pengaturan-notif', (data) => {
     // Terapkan ke variabel sistem
     suaraNotifPilihan = data.suara;
     isMuteNotif = (data.mute === '1');
