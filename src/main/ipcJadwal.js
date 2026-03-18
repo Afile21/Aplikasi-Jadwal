@@ -50,6 +50,8 @@ function initIpcJadwal() {
             event.reply('data-jadwal', jadwalList);
         } catch (error) {
             console.error("Gagal mengambil jadwal:", error);
+            // [TAMBAHAN BARU] Beritahu UI kalau terjadi error saat mengambil data
+            event.reply('simpan-gagal', 'Gagal memuat jadwal: ' + error.message); 
         }
     });
 
@@ -61,6 +63,8 @@ function initIpcJadwal() {
             event.reply('update-sukses');
         } catch (error) {
             console.error("Gagal update status:", error);
+            // [TAMBAHAN BARU]
+            event.reply('simpan-gagal', 'Gagal memindahkan kartu: ' + error.message);
         }
     });
 
@@ -72,6 +76,8 @@ function initIpcJadwal() {
             event.reply('update-sukses');
         } catch (error) {
             console.error("Gagal menghapus jadwal:", error);
+            // [TAMBAHAN BARU]
+            event.reply('simpan-gagal', 'Gagal menghapus jadwal: ' + error.message);
         }
     });
 
