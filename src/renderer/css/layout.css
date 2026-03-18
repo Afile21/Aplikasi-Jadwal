@@ -98,6 +98,16 @@
 .settings-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-md); align-items: flex-start; }
 .settings-box { background-color: var(--bg-sidebar); border-radius: var(--radius-lg); padding: var(--space-lg); box-shadow: var(--shadow-soft); border: var(--border-light); }
 
+/* --- PROYEK GRID LAYOUT (Bento Box) --- */
+.proyek-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Akan otomatis menyesuaikan jumlah kolom berdasarkan lebar layar */
+    gap: var(--space-md);
+    align-items: start;
+}
+
+
+
 /* ==========================================
    RESPONSIVE DESIGN (TATA LETAK MOBILE)
    ========================================== */
