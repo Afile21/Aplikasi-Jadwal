@@ -112,8 +112,8 @@
                     
                     <div class="jadwal-card settings-box">
                         <h3>🎨 Kelola Kategori</h3>
-                        <form id="form-tambah-kategori" class="settings-form">
-                            <input type="text" id="input-nama-kat" placeholder="Nama Kategori..." required class="input-setting">
+                        <form id="form-tambah-kategori" class="settings-form" style="display: flex; gap: 10px; margin-bottom: var(--space-md);">
+                            <input type="text" id="input-nama-kat" placeholder="Nama Kategori..." required class="input-setting" style="flex: 1;">
                             <input type="color" id="input-warna-kat" value="#89b4fa" class="input-color">
                             <button type="submit" class="btn-tambah-setting">Tambah</button>
                         </form>
@@ -122,39 +122,40 @@
 
                     <div class="jadwal-card settings-box">
                         <h3>⏰ Kelola Rutinitas Harian</h3>
-                        <form id="form-tambah-rutinitas" class="settings-form form-col">
+                        <form id="form-tambah-rutinitas" class="settings-form" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: var(--space-md);">
                             <input type="text" id="input-judul-rutin" placeholder="Nama Rutinitas (Misal: Olahraga)" required class="input-setting">
-                            <div class="form-row-setting">
-                                <input type="time" id="input-mulai-rutin" required class="input-setting">
-                                <input type="time" id="input-selesai-rutin" required class="input-setting">
+                            <div class="form-row-setting" style="display: flex; gap: 10px;">
+                                <input type="time" id="input-mulai-rutin" required class="input-setting" style="flex: 1;">
+                                <input type="time" id="input-selesai-rutin" required class="input-setting" style="flex: 1;">
                             </div>
                             <button type="submit" class="btn-tambah-setting btn-full">Tambah Rutinitas</button>
                         </form>
                         <div id="list-rutinitas-container" class="settings-list"></div>
                     </div>
 
-                </div>
-                <div class="jadwal-card settings-box" style="margin-top: 20px;">
-                    <h3>🔊 Pengaturan Notifikasi</h3>
-                    <form id="form-pengaturan-notif" class="settings-form form-col">
-                        
-                        <div class="form-group">
-                            <label>Pilih Suara Notifikasi</label>
-                            <select id="input-suara-notif" class="input-setting">
-                                <option value="">Memuat daftar suara...</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                            <input type="checkbox" id="input-mute-notif" style="width: 20px; height: 20px; accent-color: var(--accent-color); cursor: pointer;">
-                            <label for="input-mute-notif" style="cursor: pointer;">Mute Suara (Hanya tampilkan Pop-up Visual)</label>
-                        </div>
-                        
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button type="button" id="btn-tes-suara" style="padding: 10px; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--text-secondary); border-radius: 6px; cursor: pointer; flex: 1;">▶️ Tes Suara</button>
-                            <button type="submit" class="btn-tambah-setting" style="flex: 2;">Simpan Preferensi</button>
-                        </div>
-                    </form>
+                    <div class="jadwal-card settings-box box-full">
+                        <h3>🔊 Pengaturan Notifikasi</h3>
+                        <form id="form-pengaturan-notif" class="settings-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            
+                            <div class="form-group" style="margin: 0;">
+                                <label>Pilih Suara Notifikasi</label>
+                                <select id="input-suara-notif" class="input-setting">
+                                    <option value="">Memuat daftar suara...</option>
+                                </select>
+                            </div>
+                            
+                            <label class="milestone-item" style="cursor: pointer; padding: 10px 15px;">
+                                <input type="checkbox" id="input-mute-notif">
+                                <span>Mute Suara (Hanya tampilkan Pop-up Visual)</span>
+                            </label>
+                            
+                            <div style="display: flex; gap: 15px; margin-top: 5px;">
+                                <button type="button" id="btn-tes-suara" class="btn-tambah-setting" style="flex: 1; background: var(--bg-main); color: var(--text-primary); border: var(--border-light);">▶️ Tes Suara</button>
+                                <button type="submit" class="btn-simpan" style="flex: 2; margin: 0;">Simpan Preferensi</button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
 

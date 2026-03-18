@@ -97,6 +97,10 @@
 /* --- PENGATURAN LAYOUT --- */
 .settings-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-md); align-items: flex-start; }
 .settings-box { background-color: var(--bg-sidebar); border-radius: var(--radius-lg); padding: var(--space-lg); box-shadow: var(--shadow-soft); border: var(--border-light); }
+/* Mengizinkan kotak tertentu untuk mengambil lebar penuh (full span) pada grid */
+.box-full {
+    grid-column: 1 / -1;
+}
 
 /* --- PROYEK GRID LAYOUT (Bento Box) --- */
 .proyek-grid {
