@@ -238,6 +238,26 @@
             </form>
         </div>
     </div>
+    <div class="modal-overlay" id="modal-detail-proyek">
+        <div class="modal-box" style="width: 600px;"> <div class="modal-header">
+                <div>
+                    <h2 id="detail-judul">Nama Tujuan</h2>
+                    <span id="detail-target" style="font-size: 13px; color: var(--text-secondary);">Target: -</span>
+                </div>
+                <button class="btn-close" id="btn-tutup-detail">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="progress-container" style="text-align: left; width: 100%; margin-bottom: var(--space-lg);">
+                    <span id="detail-progress-teks">Progres: 0%</span>
+                    <div class="progress-bar" style="width: 100%;"><div class="progress-fill" id="detail-progress-bar" style="width: 0%;"></div></div>
+                </div>
+                
+                <h3 style="font-size: 16px; margin-bottom: var(--space-sm); color: var(--text-primary);">Daftar Langkah (Milestone)</h3>
+                <div id="detail-list-milestone" style="display: flex; flex-direction: column; gap: 12px; max-height: 40vh; overflow-y: auto; padding-right: 5px;">
+                    </div>
+            </div>
+        </div>
+    </div>
     <div id="notif-container" class="notif-container"></div>
     <script src="../../node_modules/sortablejs/Sortable.min.js"></script>
     <script src="../../node_modules/chart.js/dist/chart.umd.js"></script>

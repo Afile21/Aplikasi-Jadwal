@@ -220,3 +220,40 @@
         display: block;
     }
 }
+
+/* --- GAYA KHUSUS MILESTONE CHECKBOX (DETAIL PROYEK) --- */
+.milestone-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--bg-main);
+    border: var(--border-light);
+    border-radius: var(--radius-md); /* Sudut membulat khas Bento */
+    transition: var(--transition-fast);
+}
+
+.milestone-item:hover {
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.milestone-item input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: var(--accent-color);
+    flex-shrink: 0;
+}
+
+.milestone-item span {
+    font-size: 15px;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.milestone-item.selesai span {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
