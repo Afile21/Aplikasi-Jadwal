@@ -11,7 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
             'ambil-proyek', 'tambah-proyek', 'hapus-proyek', 'update-milestone',
             'ambil-statistik',
             'ambil-pengaturan', 'tambah-kategori', 'hapus-kategori', 'tambah-rutinitas', 'hapus-rutinitas', 'ambil-kategori-dropdown', 'ambil-pengaturan-notif', 'simpan-pengaturan-notif',
-            'tampilkan-notifikasi'
+            'tampilkan-notifikasi','ambil-daftar-suara'
         ];
         if (validChannels.includes(channel)) {
             ipcRenderer.send(channel, data);
@@ -23,7 +23,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
             'simpan-sukses', 'simpan-gagal', 'data-jadwal', 'update-sukses',
             'data-proyek', 'update-proyek-sukses',
             'data-statistik',
-            'data-pengaturan', 'update-pengaturan-sukses', 'gagal-hapus-kategori', 'data-kategori-dropdown', 'data-pengaturan-notif', 'update-notif-sukses'
+            'data-pengaturan', 'update-pengaturan-sukses', 'gagal-hapus-kategori', 'data-kategori-dropdown', 'data-pengaturan-notif', 'update-notif-sukses', 'data-daftar-suara'
         ];
         if (validChannels.includes(channel)) {
             // Hapus listener lama sebelum menambah yang baru agar tidak terjadi kebocoran memori (memory leak) / pemanggilan ganda

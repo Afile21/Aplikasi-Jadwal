@@ -1,6 +1,8 @@
 // File: src/main/ipcPengaturan.js
 const { ipcMain } = require("electron");
 const db = require("./database");
+const fs = require('fs');
+const path = require('path');
 
 function initIpcPengaturan() {
     ipcMain.on('ambil-pengaturan', (event) => {
@@ -61,6 +63,25 @@ function initIpcPengaturan() {
             db.prepare(`UPDATE pengaturan_sistem SET nilai = ? WHERE kunci = 'mute_notif'`).run(data.mute);
             event.reply('update-notif-sukses');
         } catch (err) { console.error(err); }
+    });
+
+    // --- AMBIL DAFTAR FILE SUARA OTOMATIS ---
+    ipcMain.on('ambil-daftar-suara', (event) => {
+        try {
+            const folderSuara = path.join(__dirname, '../assets/sounds');
+            if (fs.existsSync(folderSuara)) {
+                // Baca semua isi folder
+                const files = fs.readdirSync(folderSuara);
+                // Saring agar hanya mengambil file berekstensi .mp3 atau .wav
+                const fileAudio = files.filter(file => file.endsWith('.mp3') || file.endsWith('.wav'));
+                event.reply('data-daftar-suara', fileAudio);
+            } else {
+                event.reply('data-daftar-suara', []);
+            }
+        } catch (error) {
+            console.error("Gagal membaca folder suara:", error);
+            event.reply('data-daftar-suara', []);
+        }
     });
 }
 
