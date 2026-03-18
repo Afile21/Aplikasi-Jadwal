@@ -1,35 +1,69 @@
 /* File: src/renderer/css/variables.css */
 
-/* Pengaturan Tema Dasar (Dark Mode) */
 :root {
-    --bg-main: #1e1e2e;
-    --bg-sidebar: #181825;
-    --bg-card: #313244;
+    /* --- 1. WARNA UTAMA (Dark Theme) --- */
+    --bg-main: #1e1e2e;      /* Latar belakang utama yang lebih lapang */
+    --bg-sidebar: #181825;   /* Latar belakang sidebar */
+    --bg-card: #313244;      /* Latar belakang elemen Bento Box / Card */
+    
     --text-primary: #cdd6f4;
     --text-secondary: #a6adc8;
+    
     --accent-color: #89b4fa;
     --accent-hover: #74c7ec;
+
+    /* --- 2. SOFT UI BORDERS --- */
+    /* Mengganti border kaku menjadi pembatas transparan/halus */
+    --border-color: rgba(255, 255, 255, 0.05); 
+    --border-light: 1px solid var(--border-color);
+
+    /* --- 3. BORDER RADIUS (Sudut Membulat ala Bento UI) --- */
+    --radius-sm: 8px;
+    --radius-md: 16px;       /* Standar untuk tombol, input, dan elemen kecil */
+    --radius-lg: 24px;       /* Standar untuk Bento Box / Wadah utama (SANGAT PENTING untuk look Bento) */
+    --radius-full: 9999px;   /* Untuk badge status atau elemen bulat sempurna */
+
+    /* --- 4. SHADOWS (Soft Drop Shadows / Neumorphism Ringan) --- */
+    /* Bayangan sangat halus agar kotak terlihat sedikit melayang (floating) tanpa terlihat kotor */
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.15); 
+    --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.25);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    /* --- 5. SPACING (Clean & Airy Whitespace) --- */
+    --space-xs: 8px;
+    --space-sm: 16px;
+    --space-md: 24px;        /* Jarak antar kotak Bento (Gap) */
+    --space-lg: 32px;        /* Padding area utama / ruang bernapas */
+    --space-xl: 48px;
+
+    /* --- 6. TRANSITIONS (Animasi Mulus) --- */
+    --transition-fast: 0.15s ease-in-out;
+    --transition-smooth: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Menambahkan 'Inter' atau 'system-ui' sebagai prioritas agar font terlihat lebih modern dan bersih */
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
     background-color: var(--bg-main);
     color: var(--text-primary);
-    overflow: hidden; /* Mencegah scrollbar ganda */
+    overflow: hidden; /* Mencegah scrollbar ganda di level window */
+    -webkit-font-smoothing: antialiased; /* Membuat rendering teks lebih tajam & premium */
 }
 
-/* Mempercantik bentuk Scrollbar agar lebih elegan */
+/* Mempercantik bentuk Scrollbar agar lebih elegan & seamless dengan desain Soft UI */
 ::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: var(--bg-main); 
+    background: transparent; 
 }
 ::-webkit-scrollbar-thumb {
-    background: var(--text-secondary); 
-    border-radius: 4px;
+    background: var(--bg-card); 
+    border-radius: var(--radius-full);
+    border: 2px solid var(--bg-main); /* Trik CSS untuk memberi efek padding pada scrollbar */
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-color); 
+    background: var(--text-secondary); 
 }
