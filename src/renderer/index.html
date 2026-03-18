@@ -11,9 +11,12 @@
     <div class="app-layout">
         
         <aside class="sidebar">
-            <div class="profile-section">
-                <h2>JadwalKu.</h2>
-                <p id="current-date">Senin, 10 Maret</p>
+            <div class="profile-section" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h2>JadwalKu.</h2>
+                    <p id="current-date">Senin, 10 Maret</p>
+                </div>
+                <button id="btn-toggle-tema" style="background: transparent; border: none; cursor: pointer; font-size: 22px; transition: transform var(--transition-smooth);">🌙</button>
             </div>
             
             <button class="btn-tambah" id="btn-tambah-jadwal">+ Tambah Jadwal</button>

@@ -415,3 +415,36 @@ initStatistik();
 initProyek();
 initPengaturan();
 loadKategori();
+// ==========================================
+// SISTEM TEMA (LIGHT/DARK MODE)
+// ==========================================
+const btnToggleTema = document.getElementById('btn-toggle-tema');
+
+// Cek tema apa yang terakhir kali dipakai oleh user (simpan di LocalStorage)
+const temaTersimpan = localStorage.getItem('tema-jadwalku') || 'dark';
+if (temaTersimpan === 'light') {
+    document.body.setAttribute('data-theme', 'light');
+    btnToggleTema.innerText = '☀️';
+} else {
+    document.body.removeAttribute('data-theme');
+    btnToggleTema.innerText = '🌙';
+}
+
+// Event saat tombol ditekan
+btnToggleTema.addEventListener('click', () => {
+    // Berikan efek animasi putar sedikit saat diklik
+    btnToggleTema.style.transform = 'rotate(360deg)';
+    setTimeout(() => btnToggleTema.style.transform = 'rotate(0deg)', 300);
+
+    const temaSaatIni = document.body.getAttribute('data-theme');
+    
+    if (temaSaatIni === 'light') {
+        document.body.removeAttribute('data-theme'); // Kembali ke Dark
+        btnToggleTema.innerText = '🌙';
+        localStorage.setItem('tema-jadwalku', 'dark');
+    } else {
+        document.body.setAttribute('data-theme', 'light'); // Pindah ke Light
+        btnToggleTema.innerText = '☀️';
+        localStorage.setItem('tema-jadwalku', 'light');
+    }
+});
