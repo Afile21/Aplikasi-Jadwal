@@ -18,9 +18,9 @@ export function initPengaturan() {
         wadahKategori.innerHTML = '';
         data.kategori.forEach(kat => {
             wadahKategori.innerHTML += `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg-sidebar); border-radius: 4px; border-left: 4px solid ${kat.kode_warna};">
-                    <span>${kat.nama_kategori}</span>
-                    <button class="btn-hapus-kat" data-id="${kat.id_kategori}" style="background: transparent; border: none; cursor: pointer;">🗑️</button>
+                <div class="setting-item-card" style="border-left: 4px solid ${kat.kode_warna};">
+                    <span style="font-weight: 500;">${kat.nama_kategori}</span>
+                    <button class="btn-hapus-kat btn-hapus" data-id="${kat.id_kategori}" title="Hapus Kategori" style="margin:0;">🗑️</button>
                 </div>
             `;
         });
@@ -28,12 +28,12 @@ export function initPengaturan() {
         wadahRutinitas.innerHTML = '';
         data.rutinitas.forEach(rutin => {
             wadahRutinitas.innerHTML += `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg-sidebar); border-radius: 4px;">
+                <div class="setting-item-card">
                     <div>
-                        <strong>${rutin.judul_aktivitas}</strong><br>
+                        <strong style="color: var(--accent-color);">${rutin.judul_aktivitas}</strong><br>
                         <span style="font-size: 12px; color: var(--text-secondary);">🕒 ${rutin.waktu_mulai} - ${rutin.waktu_selesai}</span>
                     </div>
-                    <button class="btn-hapus-rutin" data-id="${rutin.id_rutinitas}" style="background: transparent; border: none; cursor: pointer;">🗑️</button>
+                    <button class="btn-hapus-rutin btn-hapus" data-id="${rutin.id_rutinitas}" title="Hapus Rutinitas" style="margin:0;">🗑️</button>
                 </div>
             `;
         });
