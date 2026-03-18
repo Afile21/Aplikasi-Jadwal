@@ -155,9 +155,8 @@ window.electronAPI.receive('data-jadwal', (jadwalList) => {
 
         const card = document.createElement('div');
         card.className = `jadwal-card ${jadwal.status === 'Done' ? 'selesai' : ''}`;
-        card.style.borderLeft = `5px solid ${jadwal.kode_warna}`;
         card.setAttribute('data-id', jadwal.id_jadwal);
-        
+        // Catatan: Saya menghapus card.style.borderLeft agar kartu 100% menggunakan gaya Soft UI tanpa border kaku.
         
         card.innerHTML = `
             <div class="jadwal-badge-container">
@@ -169,10 +168,10 @@ window.electronAPI.receive('data-jadwal', (jadwalList) => {
             
             <div class="jadwal-info">
                 <h3>${jadwal.judul_aktivitas}</h3>
-                <div style="color: var(--text-secondary); font-size: 13px;">🕒 ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}</div>
+                <div class="jadwal-waktu">⏱️ ${jadwal.waktu_mulai} - ${jadwal.waktu_selesai}</div>
             </div>
             
-            <div class="jadwal-aksi" style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+            <div class="jadwal-aksi">
                 <select class="status-dropdown" data-id="${jadwal.id_jadwal}">
                     <option value="To Do" ${jadwal.status === 'To Do' ? 'selected' : ''}>To Do</option>
                     <option value="In Progress" ${jadwal.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
