@@ -5,54 +5,69 @@
     background-color: var(--accent-color);
     color: #11111b; /* Warna gelap khusus teks di atas aksen */
     border: none;
-    border-radius: 8px;
-    font-weight: bold;
+    border-radius: var(--radius-md);
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 12px rgba(137, 180, 250, 0.2); /* Efek soft glow */
 }
 
-.btn-tambah { padding: 12px; margin-top: 30px; font-size: 16px; }
-.btn-simpan { padding: 12px; width: 100%; font-size: 16px; margin-top: 10px; }
-.btn-tambah-setting { padding: 10px 15px; border-radius: 6px; }
+.btn-tambah { padding: 14px; margin-top: var(--space-lg); font-size: 15px; }
+.btn-simpan { padding: 14px; width: 100%; font-size: 15px; margin-top: var(--space-sm); }
+.btn-tambah-setting { padding: 10px 16px; border-radius: var(--radius-sm); }
 
-.btn-tambah:hover, .btn-simpan:hover { background-color: var(--accent-hover); }
-.btn-tambah-setting:hover { opacity: 0.9; }
-.btn-tambah-setting:active { transform: scale(0.97); }
+.btn-tambah:hover, .btn-simpan:hover { 
+    background-color: var(--accent-hover); 
+    transform: translateY(-2px); /* Efek terangkat saat dihover */
+    box-shadow: 0 6px 16px rgba(137, 180, 250, 0.35);
+}
+.btn-tambah-setting:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-tambah:active, .btn-simpan:active, .btn-tambah-setting:active { transform: scale(0.97); }
 
 .btn-full { width: 100%; }
 
+/* --- MENU NAVIGASI KIRI --- */
 .menu-item {
     text-decoration: none;
     color: var(--text-secondary);
-    padding: 10px 15px;
-    border-radius: 6px;
-    transition: all 0.2s;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+    font-weight: 500;
 }
 
 .menu-item:hover, .menu-item.active {
     background-color: var(--bg-card);
     color: var(--text-primary);
+    box-shadow: var(--shadow-soft);
 }
 
-/* --- KARTU (CARDS) --- */
+/* --- KARTU KANBAN (CARDS) --- */
 .jadwal-card {
     background-color: var(--bg-card);
-    padding: 15px; /* Standar Kanban */
-    border-radius: 8px;
+    padding: var(--space-md); /* Ruang bernapas lebih lega */
+    border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s, background-color 0.2s;
+    gap: var(--space-xs);
+    box-shadow: var(--shadow-soft);
+    border: var(--border-light);
+    transition: var(--transition-smooth);
     cursor: grab;
+    position: relative;
+    overflow: hidden;
 }
 
-.jadwal-card:hover { transform: translateY(-3px); }
-.jadwal-card:active { cursor: grabbing; }
+.jadwal-card:hover { 
+    transform: translateY(-3px); 
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+.jadwal-card:active { cursor: grabbing; transform: translateY(0); }
 
 .jadwal-card.selesai {
-    opacity: 0.5; 
-    background-color: #252535; 
+    opacity: 0.6; 
+    background-color: rgba(37, 37, 53, 0.8); /* Warna redup untuk tugas selesai */
 }
 .jadwal-card.selesai h3 {
     text-decoration: line-through; 
@@ -63,52 +78,67 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
 }
 
-/* --- FORM INPUTS --- */
-.form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-.form-row { display: flex; gap: 15px; }
+/* --- FORM INPUTS (NEUMORPHISM RINGAN) --- */
+.form-group { display: flex; flex-direction: column; margin-bottom: var(--space-sm); }
+.form-row { display: flex; gap: var(--space-md); }
 .form-row .form-group { flex: 1; }
-.form-row-setting { display: flex; gap: 10px; width: 100%; }
+.form-row-setting { display: flex; gap: var(--space-sm); width: 100%; }
 
 .form-group label {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+    font-weight: 500;
 }
 
 .form-group input, .form-group select, .input-setting {
     background-color: var(--bg-main);
-    border: 1px solid var(--bg-card);
+    border: var(--border-light);
     color: var(--text-primary);
-    padding: 10px;
-    border-radius: 6px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
     font-family: inherit;
-    transition: border-color 0.3s;
+    font-size: 14px;
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-inner); /* Efek menjorok ke dalam */
 }
 
-.input-setting { border: 1px solid var(--text-secondary); }
-.input-setting:focus { border-color: var(--accent-color); outline: none; }
+.form-group input:focus, .form-group select:focus, .input-setting:focus { 
+    border-color: var(--accent-color); 
+    outline: none; 
+    box-shadow: 0 0 0 3px rgba(137, 180, 250, 0.15); /* Cincin fokus (Focus ring) glow */
+}
 
 .input-color {
-    height: 38px; width: 45px; padding: 0;
-    border: none; border-radius: 6px;
+    height: 42px; width: 48px; padding: 0;
+    border: none; border-radius: var(--radius-md);
     cursor: pointer; background-color: transparent;
 }
 
-/* --- BADGES & STATUS --- */
+/* --- BADGES & STATUS (PILL SHAPE) --- */
 .badge-prioritas {
-    font-size: 11px; padding: 3px 8px;
-    border-radius: 4px; font-weight: bold;
+    font-size: 11px; padding: 4px 10px;
+    border-radius: var(--radius-full); 
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
-.badge-prioritas.tinggi { background-color: #f38ba830; color: #f38ba8; }
-.badge-prioritas.sedang { background-color: #f9e2af30; color: #f9e2af; }
-.badge-prioritas.rendah { background-color: #a6e3a130; color: #a6e3a1; }
+.badge-prioritas.tinggi { background-color: rgba(243, 139, 168, 0.15); color: #f38ba8; border: 1px solid rgba(243, 139, 168, 0.3); }
+.badge-prioritas.sedang { background-color: rgba(249, 226, 175, 0.15); color: #f9e2af; border: 1px solid rgba(249, 226, 175, 0.3); }
+.badge-prioritas.rendah { background-color: rgba(166, 227, 161, 0.15); color: #a6e3a1; border: 1px solid rgba(166, 227, 161, 0.3); }
 
 .status-dropdown {
     background-color: var(--bg-main);
     color: var(--text-primary);
-    border: 1px solid var(--text-secondary);
-    border-radius: 4px; padding: 4px;
+    border: var(--border-light);
+    border-radius: var(--radius-sm); 
+    padding: 6px 10px;
     font-size: 12px; cursor: pointer;
+    transition: var(--transition-fast);
+}
+.status-dropdown:hover {
+    border-color: var(--text-secondary);
 }
