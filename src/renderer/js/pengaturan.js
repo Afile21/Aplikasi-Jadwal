@@ -106,8 +106,11 @@ export function initPengaturan() {
             } else {
                 fileAudio.forEach(file => {
                     const pathAudio = `../assets/sounds/${file}`;
-                    // Merapikan nama file agar enak dibaca (misal: "suara-1.mp3" jadi "SUARA 1")
-                    const namaTampil = file.replace('.mp3', '').replace('.wav', '').replace(/-/g, ' ').toUpperCase();
+                    
+                    // [LOGIKA BARU] Hapus teks dari titik (.) terakhir, apapun ekstensinya
+                    const namaTanpaEkstensi = file.substring(0, file.lastIndexOf('.'));
+                    // Rapikan tanda strip menjadi spasi dan jadikan huruf kapital
+                    const namaTampil = namaTanpaEkstensi.replace(/-/g, ' ').toUpperCase();
                     
                     selectSuara.innerHTML += `<option value="${pathAudio}">${namaTampil}</option>`;
                 });

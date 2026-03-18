@@ -70,10 +70,16 @@ function initIpcPengaturan() {
         try {
             const folderSuara = path.join(__dirname, '../assets/sounds');
             if (fs.existsSync(folderSuara)) {
-                // Baca semua isi folder
                 const files = fs.readdirSync(folderSuara);
-                // Saring agar hanya mengambil file berekstensi .mp3 atau .wav
-                const fileAudio = files.filter(file => file.endsWith('.mp3') || file.endsWith('.wav'));
+                
+                // [LOGIKA BARU] Daftar ekstensi audio yang diizinkan (Silakan tambah jika perlu)
+                const ekstensiValid = ['.mp3', '.wav', '.ogg', '.flac', '.m4a', '.aac'];
+                
+                const fileAudio = files.filter(file => {
+                    const ekstensi = path.extname(file).toLowerCase(); // Ambil ekstensi filenya
+                    return ekstensiValid.includes(ekstensi); // Cek apakah ada di daftar valid
+                });
+                
                 event.reply('data-daftar-suara', fileAudio);
             } else {
                 event.reply('data-daftar-suara', []);
