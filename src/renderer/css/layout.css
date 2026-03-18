@@ -1,103 +1,128 @@
 /* File: src/renderer/css/layout.css */
 
-/* --- LAYOUT UTAMA --- */
+/* --- LAYOUT UTAMA (Bento Grid Foundation) --- */
 .app-layout {
     display: flex;
     height: 100vh;
+    padding: var(--space-md); /* Memberikan jarak bernapas dari tepi layar / Window */
+    gap: var(--space-md);     /* Jarak antara sidebar dan konten utama */
+    box-sizing: border-box;
+    background-color: var(--bg-main);
 }
 
-/* --- SIDEBAR --- */
+/* --- SIDEBAR (Bento Box Kiri) --- */
 .sidebar {
     width: 260px;
     background-color: var(--bg-sidebar);
-    padding: 24px;
+    padding: var(--space-lg);
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--bg-card); /* Menggunakan variabel */
+    border-radius: var(--radius-lg); /* Sudut membulat khas Bento */
+    box-shadow: var(--shadow-soft);  /* Bayangan lembut (floating effect) */
+    border: var(--border-light);     /* Garis batas halus */
+    /* border-right kaku yang lama kita hapus */
 }
 
 .profile-section h2 {
     margin: 0;
     color: var(--accent-color);
     font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .profile-section p {
     color: var(--text-secondary);
-    margin-top: 5px;
+    margin-top: var(--space-xs);
     font-size: 14px;
+    font-weight: 500;
 }
 
 .menu-nav {
-    margin-top: 40px;
+    margin-top: var(--space-xl);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-sm);
 }
 
-/* --- AREA UTAMA --- */
+/* --- AREA UTAMA (Wadah Konten Kanan) --- */
 .main-content {
     flex: 1;
-    padding: 30px;
-    background-color: var(--bg-main);
-    height: 100vh; 
-    overflow-y: auto; 
+    background-color: transparent; /* Dibuat transparan agar kotak Bento di dalamnya yang menonjol */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: var(--space-xs); /* Ruang kecil agar scrollbar tidak menempel ke konten */
+    gap: var(--space-md); /* Jarak antar kotak Bento (Header, Kanban, dll) */
 }
 
+/* Mengubah Header menjadi salah satu Bento Box */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    background-color: var(--bg-sidebar);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: var(--border-light);
 }
 
 .main-header h1 {
     margin: 0;
-    font-size: 28px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
-/* --- KANBAN BOARD LAYOUT --- */
+/* --- KANBAN BOARD LAYOUT (Bento Grid) --- */
 .kanban-board {
-    display: flex;
-    gap: 20px;
-    height: 100%;
-    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Otomatis membagi 3 kolom sama besar */
+    gap: var(--space-md);
+    flex: 1; /* Mengisi sisa ruang di bawah header */
+    min-height: 0; /* Mencegah bug overflow pada flexbox/grid */
 }
 
 .kanban-column {
-    flex: 1;
     background-color: var(--bg-sidebar);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow-soft);
+    border: var(--border-light);
     overflow: hidden;
 }
 
 .kanban-list {
     flex: 1;
-    padding: 15px;
+    padding: var(--space-md);
     overflow-y: auto; 
-    max-height: calc(100vh - 200px); 
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: var(--space-sm);
 }
 
-/* --- DASHBOARD GRID LAYOUT --- */
+/* --- DASHBOARD GRID LAYOUT (Statistik) --- */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 2fr; 
-    gap: 20px;
-    margin-top: 10px;
+    gap: var(--space-md);
 }
 
 /* --- PENGATURAN LAYOUT --- */
 .settings-container {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsif otomatis */
+    gap: var(--space-md);
     align-items: flex-start;
 }
 
 .settings-box {
-    flex: 1;
+    background-color: var(--bg-sidebar);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-soft);
+    border: var(--border-light);
 }
