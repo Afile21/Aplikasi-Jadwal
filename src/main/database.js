@@ -5,6 +5,8 @@ const path = require("path");
 // 1. Inisialisasi Koneksi Database
 const dbPath = path.join(__dirname, "../../database.db");
 const db = new Database(dbPath);
+// [TAMBAHAN BARU] Mengaktifkan Write-Ahead Logging untuk performa & mencegah db locked
+db.pragma('journal_mode = WAL');
 
 // 2. Fungsi untuk membuat tabel dan mengisi data default
 function inisialisasiDatabase() {
