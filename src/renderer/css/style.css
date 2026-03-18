@@ -1,21 +1,4 @@
-/* Pengaturan Tema Dasar (Dark Mode) */
-:root {
-    --bg-main: #1e1e2e;
-    --bg-sidebar: #181825;
-    --bg-card: #313244;
-    --text-primary: #cdd6f4;
-    --text-secondary: #a6adc8;
-    --accent-color: #89b4fa;
-    --accent-hover: #74c7ec;
-}
-
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    overflow: hidden; /* Mencegah scrollbar ganda */
-}
+@import url('./variables.css');
 
 /* Layout Bersebelahan */
 .app-layout {
@@ -378,21 +361,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-/* Opsional: Mempercantik bentuk Scrollbar agar lebih elegan (Taruh di paling bawah style.css) */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: var(--bg-main); 
-}
-::-webkit-scrollbar-thumb {
-    background: var(--text-secondary); 
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-color); 
 }
 
 /* Modifikasi Kartu Jadwal untuk Kanban */

@@ -1,0 +1,35 @@
+/* File: src/renderer/css/variables.css */
+
+/* Pengaturan Tema Dasar (Dark Mode) */
+:root {
+    --bg-main: #1e1e2e;
+    --bg-sidebar: #181825;
+    --bg-card: #313244;
+    --text-primary: #cdd6f4;
+    --text-secondary: #a6adc8;
+    --accent-color: #89b4fa;
+    --accent-hover: #74c7ec;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    overflow: hidden; /* Mencegah scrollbar ganda */
+}
+
+/* Mempercantik bentuk Scrollbar agar lebih elegan */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-main); 
+}
+::-webkit-scrollbar-thumb {
+    background: var(--text-secondary); 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color); 
+}

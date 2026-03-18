@@ -256,12 +256,6 @@ function tampilkanNotifKustom(judul, pesan, tipe) {
             audio.play();
         } catch (err) { console.error("Gagal memutar suara:", err); }
     }
-    // 1.2. Mainkan Suara dari folder sounds
-    try {
-        const audio = new Audio(suaraNotifPilihan); 
-        audio.play();
-    } catch (err) { console.error("Gagal memutar suara:", err); }
-
     // 2. Buat Elemen Visual (Pop-up)
     const container = document.getElementById('notif-container');
     const notifEl = document.createElement('div');
