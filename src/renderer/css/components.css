@@ -1,0 +1,114 @@
+/* File: src/renderer/css/components.css */
+
+/* --- TOMBOL (BUTTONS) --- */
+.btn-tambah, .btn-simpan, .btn-tambah-setting {
+    background-color: var(--accent-color);
+    color: #11111b; /* Warna gelap khusus teks di atas aksen */
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-tambah { padding: 12px; margin-top: 30px; font-size: 16px; }
+.btn-simpan { padding: 12px; width: 100%; font-size: 16px; margin-top: 10px; }
+.btn-tambah-setting { padding: 10px 15px; border-radius: 6px; }
+
+.btn-tambah:hover, .btn-simpan:hover { background-color: var(--accent-hover); }
+.btn-tambah-setting:hover { opacity: 0.9; }
+.btn-tambah-setting:active { transform: scale(0.97); }
+
+.btn-full { width: 100%; }
+
+.menu-item {
+    text-decoration: none;
+    color: var(--text-secondary);
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.menu-item:hover, .menu-item.active {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+}
+
+/* --- KARTU (CARDS) --- */
+.jadwal-card {
+    background-color: var(--bg-card);
+    padding: 15px; /* Standar Kanban */
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s, background-color 0.2s;
+    cursor: grab;
+}
+
+.jadwal-card:hover { transform: translateY(-3px); }
+.jadwal-card:active { cursor: grabbing; }
+
+.jadwal-card.selesai {
+    opacity: 0.5; 
+    background-color: #252535; 
+}
+.jadwal-card.selesai h3 {
+    text-decoration: line-through; 
+    color: var(--text-secondary);
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --- FORM INPUTS --- */
+.form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+.form-row { display: flex; gap: 15px; }
+.form-row .form-group { flex: 1; }
+.form-row-setting { display: flex; gap: 10px; width: 100%; }
+
+.form-group label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group select, .input-setting {
+    background-color: var(--bg-main);
+    border: 1px solid var(--bg-card);
+    color: var(--text-primary);
+    padding: 10px;
+    border-radius: 6px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.input-setting { border: 1px solid var(--text-secondary); }
+.input-setting:focus { border-color: var(--accent-color); outline: none; }
+
+.input-color {
+    height: 38px; width: 45px; padding: 0;
+    border: none; border-radius: 6px;
+    cursor: pointer; background-color: transparent;
+}
+
+/* --- BADGES & STATUS --- */
+.badge-prioritas {
+    font-size: 11px; padding: 3px 8px;
+    border-radius: 4px; font-weight: bold;
+}
+.badge-prioritas.tinggi { background-color: #f38ba830; color: #f38ba8; }
+.badge-prioritas.sedang { background-color: #f9e2af30; color: #f9e2af; }
+.badge-prioritas.rendah { background-color: #a6e3a130; color: #a6e3a1; }
+
+.status-dropdown {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    border: 1px solid var(--text-secondary);
+    border-radius: 4px; padding: 4px;
+    font-size: 12px; cursor: pointer;
+}
