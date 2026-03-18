@@ -142,3 +142,41 @@
 .status-dropdown:hover {
     border-color: var(--text-secondary);
 }
+
+/* --- TOMBOL HAMBURGER (MOBILE MENU) --- */
+.btn-hamburger {
+    display: none; /* Sembunyikan di layar desktop yang lebar */
+    background-color: var(--bg-sidebar);
+    border: var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    z-index: 101; 
+    transition: var(--transition-smooth);
+    margin-bottom: var(--space-xs);
+    width: fit-content;
+}
+
+/* Tiga garis penyusun ikon hamburger */
+.btn-hamburger .bar {
+    display: block;
+    width: 22px;
+    height: 3px;
+    margin: 4px auto;
+    background-color: var(--text-primary);
+    border-radius: var(--radius-full);
+    transition: var(--transition-smooth);
+}
+
+.btn-hamburger:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Munculkan tombol hanya jika ukuran layar mengecil (HP/Tablet) */
+@media (max-width: 850px) {
+    .btn-hamburger {
+        display: block;
+    }
+}
