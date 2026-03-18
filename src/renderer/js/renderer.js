@@ -1,5 +1,6 @@
 import { initStatistik } from './statistik.js';
 import { initProyek } from './proyek.js';
+import { initPengaturan, loadKategori, suaraNotifPilihan, isMuteNotif } from './pengaturan.js';
 
 // Mengambil elemen-elemen dari HTML
 const btnTambahJadwal = document.getElementById('btn-tambah-jadwal');
@@ -246,11 +247,6 @@ loadJadwal();
 let jadwalDimulaiNotif = []; 
 let jadwalSelesaiNotif = []; 
 
-// [FONDASI SETTINGS] 
-// Variabel ini sementara kita tulis manual. 
-// Nanti di tahap integrasi pengaturan, nilai ini akan diganti otomatis dari database.
-let suaraNotifPilihan = 'sounds/suara-1.mp3'; 
-let isMuteNotif = false; // [BARU] Variabel untuk mendeteksi apakah disenyapkan
 
 function tampilkanNotifKustom(judul, pesan, tipe) {
     // 1. Mainkan Suara (Hanya jika tidak di-mute)
@@ -422,142 +418,7 @@ document.getElementById('nav-pengaturan').addEventListener('click', (e) => {
     window.electronAPI.send('ambil-pengaturan'); // Minta data terbaru dari database
 });
 
-// Menerima dan merender data Kategori & Rutinitas
-window.electronAPI.receive('data-pengaturan', (data) => {
-    const wadahKategori = document.getElementById('list-kategori-container');
-    const wadahRutinitas = document.getElementById('list-rutinitas-container');
-    
-    // --- Render Kategori ---
-    wadahKategori.innerHTML = '';
-    data.kategori.forEach(kat => {
-        wadahKategori.innerHTML += `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg-sidebar); border-radius: 4px; border-left: 4px solid ${kat.kode_warna};">
-                <span>${kat.nama_kategori}</span>
-                <button class="btn-hapus-kat" data-id="${kat.id_kategori}" style="background: transparent; border: none; cursor: pointer;">🗑️</button>
-            </div>
-        `;
-    });
-
-    // --- Render Rutinitas ---
-    wadahRutinitas.innerHTML = '';
-    data.rutinitas.forEach(rutin => {
-        wadahRutinitas.innerHTML += `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg-sidebar); border-radius: 4px;">
-                <div>
-                    <strong>${rutin.judul_aktivitas}</strong><br>
-                    <span style="font-size: 12px; color: var(--text-secondary);">🕒 ${rutin.waktu_mulai} - ${rutin.waktu_selesai}</span>
-                </div>
-                <button class="btn-hapus-rutin" data-id="${rutin.id_rutinitas}" style="background: transparent; border: none; cursor: pointer;">🗑️</button>
-            </div>
-        `;
-    });
-
-    // Event Listener Hapus Kategori
-    document.querySelectorAll('.btn-hapus-kat').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if(confirm("Hapus kategori ini?")) window.electronAPI.send('hapus-kategori', e.target.getAttribute('data-id'));
-        });
-    });
-
-    // Event Listener Hapus Rutinitas
-    document.querySelectorAll('.btn-hapus-rutin').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if(confirm("Hapus rutinitas ini? Jadwal otomatis tidak akan muncul lagi besok.")) window.electronAPI.send('hapus-rutinitas', e.currentTarget.getAttribute('data-id'));
-        });
-    });
-});
-
-// --- Event Tambah Kategori ---
-document.getElementById('form-tambah-kategori').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const nama = document.getElementById('input-nama-kat').value;
-    const warna = document.getElementById('input-warna-kat').value;
-    window.electronAPI.send('tambah-kategori', { nama, warna });
-    e.target.reset();
-});
-
-// --- Event Tambah Rutinitas ---
-document.getElementById('form-tambah-rutinitas').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const judul = document.getElementById('input-judul-rutin').value;
-    const mulai = document.getElementById('input-mulai-rutin').value;
-    const selesai = document.getElementById('input-selesai-rutin').value;
-    window.electronAPI.send('tambah-rutinitas', { judul, mulai, selesai });
-    e.target.reset();
-});
-
-// Refresh halaman otomatis jika ada perubahan
-window.electronAPI.receive('update-pengaturan-sukses', () => {
-    window.electronAPI.send('ambil-pengaturan');
-   loadKategori(); // Memperbarui dropdown kategori di modal tambah jadwal juga!
-});
-
-// Peringatan jika gagal menghapus kategori
-window.electronAPI.receive('gagal-hapus-kategori', (pesan) => {
-    alert(pesan);
-});
-
-// ==========================================
-// LOGIKA DROPDOWN KATEGORI DINAMIS
-// ==========================================
-function loadKategori() {
-    window.electronAPI.send('ambil-kategori-dropdown');
-}
-
-window.electronAPI.receive('data-kategori-dropdown', (kategoriList) => {
-    const select = document.getElementById('input-kategori');
-    select.innerHTML = ''; // Kosongkan dulu
-    
-    kategoriList.forEach(k => {
-        const option = document.createElement('option');
-        option.value = k.id_kategori;
-        option.textContent = k.nama_kategori;
-        select.appendChild(option);
-    });
-});
-
-// Panggil fungsi ini saat aplikasi pertama kali dibuka
-loadKategori();
-
-
-// ==========================================
-// LOGIKA MENU PENGATURAN NOTIFIKASI
-// ==========================================
-// Minta data notif saat aplikasi pertama kali dibuka
-window.electronAPI.send('ambil-pengaturan-notif');
-
-window.electronAPI.receive('data-pengaturan-notif', (data) => {
-    // Terapkan ke variabel sistem
-    suaraNotifPilihan = data.suara;
-    isMuteNotif = (data.mute === '1');
-
-    // Terapkan juga ke tampilan UI di menu Pengaturan
-    const selectSuara = document.getElementById('input-suara-notif');
-    const checkMute = document.getElementById('input-mute-notif');
-    if (selectSuara) selectSuara.value = data.suara;
-    if (checkMute) checkMute.checked = isMuteNotif;
-});
-
-// Saat tombol "Simpan Preferensi" diklik
-document.getElementById('form-pengaturan-notif').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const suara = document.getElementById('input-suara-notif').value;
-    const mute = document.getElementById('input-mute-notif').checked ? '1' : '0';
-    window.electronAPI.send('simpan-pengaturan-notif', { suara, mute });
-});
-
-// Konfirmasi sukses tersimpan
-window.electronAPI.receive('update-notif-sukses', () => {
-    alert("Preferensi notifikasi berhasil disimpan!");
-    window.electronAPI.send('ambil-pengaturan-notif'); // Muat ulang variabel
-});
-
-// Fitur Tes Suara langsung dari pilihan Dropdown
-document.getElementById('btn-tes-suara').addEventListener('click', () => {
-    const suaraTes = document.getElementById('input-suara-notif').value;
-    const audio = new Audio(suaraTes);
-    audio.play().catch(e => alert("Gagal memutar suara. Pastikan file " + suaraTes + " ada di dalam folder 'sounds'."));
-});
-
 initStatistik();
 initProyek();
+initPengaturan();
+loadKategori();
