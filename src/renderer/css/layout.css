@@ -4,10 +4,12 @@
 .app-layout {
     display: flex;
     height: 100vh;
-    padding: var(--space-md); /* Memberikan jarak bernapas dari tepi layar / Window */
-    gap: var(--space-md);     /* Jarak antara sidebar dan konten utama */
+    padding: var(--space-md); 
+    gap: var(--space-md);     
     box-sizing: border-box;
     background-color: var(--bg-main);
+    position: relative; /* Penting sebagai acuan Sidebar melayang di mode layar sempit */
+    overflow: hidden;
 }
 
 /* --- SIDEBAR (Bento Box Kiri) --- */
@@ -17,47 +19,39 @@
     padding: var(--space-lg);
     display: flex;
     flex-direction: column;
-    border-radius: var(--radius-lg); /* Sudut membulat khas Bento */
-    box-shadow: var(--shadow-soft);  /* Bayangan lembut (floating effect) */
-    border: var(--border-light);     /* Garis batas halus */
-    /* border-right kaku yang lama kita hapus */
+    border-radius: var(--radius-lg); 
+    box-shadow: var(--shadow-soft);  
+    border: var(--border-light);     
+    z-index: 100;
+    /* Efek transisi Soft UI untuk menu buka-tutup di mobile */
+    transition: transform var(--transition-smooth), opacity var(--transition-smooth); 
 }
 
 .profile-section h2 {
-    margin: 0;
-    color: var(--accent-color);
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    margin: 0; color: var(--accent-color); font-size: 24px; font-weight: 800; letter-spacing: -0.5px;
 }
 
 .profile-section p {
-    color: var(--text-secondary);
-    margin-top: var(--space-xs);
-    font-size: 14px;
-    font-weight: 500;
+    color: var(--text-secondary); margin-top: var(--space-xs); font-size: 14px; font-weight: 500;
 }
 
 .menu-nav {
-    margin-top: var(--space-xl);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
+    margin-top: var(--space-xl); display: flex; flex-direction: column; gap: var(--space-sm);
 }
 
 /* --- AREA UTAMA (Wadah Konten Kanan) --- */
 .main-content {
     flex: 1;
-    background-color: transparent; /* Dibuat transparan agar kotak Bento di dalamnya yang menonjol */
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: var(--space-xs); /* Ruang kecil agar scrollbar tidak menempel ke konten */
-    gap: var(--space-md); /* Jarak antar kotak Bento (Header, Kanban, dll) */
+    padding-right: var(--space-xs); 
+    gap: var(--space-md); 
+    transition: filter var(--transition-smooth); /* Akan digunakan untuk nge-blur background saat menu hp terbuka */
 }
 
-/* Mengubah Header menjadi salah satu Bento Box */
+/* Header Utama (Bento Box Atas) */
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -67,22 +61,20 @@
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-soft);
     border: var(--border-light);
+    gap: var(--space-md);
 }
 
 .main-header h1 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+    margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;
 }
 
 /* --- KANBAN BOARD LAYOUT (Bento Grid) --- */
 .kanban-board {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Otomatis membagi 3 kolom sama besar */
+    grid-template-columns: repeat(3, 1fr); 
     gap: var(--space-md);
-    flex: 1; /* Mengisi sisa ruang di bawah header */
-    min-height: 0; /* Mencegah bug overflow pada flexbox/grid */
+    flex: 1; 
+    min-height: 0; 
 }
 
 .kanban-column {
@@ -96,33 +88,43 @@
 }
 
 .kanban-list {
-    flex: 1;
-    padding: var(--space-md);
-    overflow-y: auto; 
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
+    flex: 1; padding: var(--space-md); overflow-y: auto; display: flex; flex-direction: column; gap: var(--space-sm);
 }
 
 /* --- DASHBOARD GRID LAYOUT (Statistik) --- */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr; 
-    gap: var(--space-md);
-}
+.dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-md); }
 
 /* --- PENGATURAN LAYOUT --- */
-.settings-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsif otomatis */
-    gap: var(--space-md);
-    align-items: flex-start;
-}
+.settings-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-md); align-items: flex-start; }
+.settings-box { background-color: var(--bg-sidebar); border-radius: var(--radius-lg); padding: var(--space-lg); box-shadow: var(--shadow-soft); border: var(--border-light); }
 
-.settings-box {
-    background-color: var(--bg-sidebar);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    box-shadow: var(--shadow-soft);
-    border: var(--border-light);
+/* ==========================================
+   RESPONSIVE DESIGN (TATA LETAK MOBILE)
+   ========================================== */
+@media (max-width: 850px) {
+    /* 1. Sembunyikan Sidebar ke luar layar sebelah kiri */
+    .sidebar {
+        position: absolute;
+        left: var(--space-md); top: var(--space-md); bottom: var(--space-md);
+        transform: translateX(-150%);
+        opacity: 0;
+        width: calc(100% - calc(var(--space-md) * 2));
+        pointer-events: none;
+    }
+    
+    /* Class tambahan untuk memunculkan sidebar (Akan dikontrol JavaScript) */
+    .sidebar.terbuka {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    /* 2. Ubah tata letak utama menjadi vertikal ke bawah */
+    .kanban-board { grid-template-columns: 1fr; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    
+    .main-header { flex-direction: column; align-items: flex-start; }
+    .header-nav-tanggal, .progress-container { width: 100%; }
+    .progress-container { text-align: left; }
+    .progress-bar { width: 100%; }
 }
