@@ -45,11 +45,11 @@
 /* --- KARTU KANBAN (CARDS) --- */
 .jadwal-card {
     background-color: var(--bg-card);
-    padding: var(--space-md); /* Ruang bernapas lebih lega */
-    border-radius: var(--radius-md);
+    padding: var(--space-lg); /* Whitespace diperbesar agar tampil "Airy" */
+    border-radius: var(--radius-lg); /* Sudut membulat SANGAT PENTING untuk Bento UI */
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: var(--space-sm);
     box-shadow: var(--shadow-soft);
     border: var(--border-light);
     transition: var(--transition-smooth);
@@ -59,20 +59,61 @@
 }
 
 .jadwal-card:hover { 
-    transform: translateY(-3px); 
+    transform: translateY(-4px); 
     box-shadow: var(--shadow-hover);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(137, 180, 250, 0.4); /* Efek glow biru ringan di pinggiran saat dihover */
 }
 .jadwal-card:active { cursor: grabbing; transform: translateY(0); }
 
 .jadwal-card.selesai {
     opacity: 0.6; 
-    background-color: rgba(37, 37, 53, 0.8); /* Warna redup untuk tugas selesai */
+    background-color: var(--bg-main); /* Dibuat membaur dengan background utama */
+    border: 1px dashed var(--text-secondary);
+    box-shadow: none;
 }
 .jadwal-card.selesai h3 {
     text-decoration: line-through; 
     color: var(--text-secondary);
 }
+
+/* --- AKSI & TOMBOL DALAM KARTU --- */
+.jadwal-aksi {
+    display: flex; 
+    align-items: center; 
+    margin-top: var(--space-sm); 
+    padding-top: var(--space-sm); 
+    border-top: var(--border-light); 
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap; /* SANGAT PENTING: Mencegah tombol bertumpuk jika layar sempit */
+}
+
+/* Wadah untuk menyejajarkan ikon Edit & Hapus secara horizontal */
+.jadwal-aksi > div {
+    display: flex;
+    gap: 8px; /* Jarak proporsional antar tombol */
+    align-items: center;
+}
+
+/* Desain tombol aksi menjadi kotak bergaya Soft UI */
+.btn-edit, .btn-hapus { 
+    background-color: var(--bg-main); 
+    border: var(--border-light); 
+    border-radius: var(--radius-sm);
+    width: 34px; 
+    height: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px; 
+    cursor: pointer; 
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-inner);
+    margin: 0; /* Menghilangkan margin bawaan */
+}
+
+.btn-edit:hover { background-color: rgba(137, 180, 250, 0.15); border-color: var(--accent-color); transform: scale(1.05); }
+.btn-hapus:hover { background-color: rgba(243, 139, 168, 0.15); border-color: #f38ba8; transform: scale(1.05); }
 
 .stat-card {
     display: flex;
@@ -80,7 +121,6 @@
     justify-content: center;
     align-items: center;
 }
-
 /* --- FORM INPUTS (NEUMORPHISM RINGAN) --- */
 .form-group { display: flex; flex-direction: column; margin-bottom: var(--space-sm); }
 .form-row { display: flex; gap: var(--space-md); }
