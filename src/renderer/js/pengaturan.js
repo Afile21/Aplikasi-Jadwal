@@ -93,7 +93,30 @@ export function initPengaturan() {
     });
 
     // --- 5. PENGATURAN NOTIFIKASI ---
-    window.electronAPI.send('ambil-pengaturan-notif');
+    // A. Minta daftar file audio dari folder lokal terlebih dahulu
+    window.electronAPI.send('ambil-daftar-suara');
+    
+    window.electronAPI.receive('data-daftar-suara', (fileAudio) => {
+        const selectSuara = document.getElementById('input-suara-notif');
+        if(selectSuara) {
+            selectSuara.innerHTML = ''; // Kosongkan teks "Memuat..."
+            
+            if(fileAudio.length === 0) {
+                selectSuara.innerHTML = '<option value="">(Tidak ada file audio)</option>';
+            } else {
+                fileAudio.forEach(file => {
+                    const pathAudio = `../assets/sounds/${file}`;
+                    // Merapikan nama file agar enak dibaca (misal: "suara-1.mp3" jadi "SUARA 1")
+                    const namaTampil = file.replace('.mp3', '').replace('.wav', '').replace(/-/g, ' ').toUpperCase();
+                    
+                    selectSuara.innerHTML += `<option value="${pathAudio}">${namaTampil}</option>`;
+                });
+            }
+        }
+        
+        // B. SETELAH dropdown terisi, baru kita minta preferensi yang tersimpan di database
+        window.electronAPI.send('ambil-pengaturan-notif');
+    });
 
     window.electronAPI.receive('data-pengaturan-notif', (data) => {
         suaraNotifPilihan = data.suara;
@@ -101,7 +124,7 @@ export function initPengaturan() {
 
         const selectSuara = document.getElementById('input-suara-notif');
         const checkMute = document.getElementById('input-mute-notif');
-        if (selectSuara) selectSuara.value = data.suara;
+        if (selectSuara) selectSuara.value = data.suara; // Menandai opsi yang sedang aktif
         if (checkMute) checkMute.checked = isMuteNotif;
     });
 
