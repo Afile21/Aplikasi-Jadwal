@@ -1,5 +1,3 @@
-const Sortable = require('sortablejs'); // Memanggil pustaka drag-and-drop
-const Chart = require('chart.js/auto');
 let grafikInstance = null; // Menyimpan grafik agar bisa di-refresh
 
 // Mengambil elemen-elemen dari HTML
