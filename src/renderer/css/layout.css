@@ -52,6 +52,7 @@
 }
 
 /* Header Utama (Bento Box Atas) */
+/* Header Utama (Bento Box Atas) */
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -62,6 +63,9 @@
     box-shadow: var(--shadow-soft);
     border: var(--border-light);
     gap: var(--space-md);
+    
+    /* ✨ TAMBAHAN BARU: Memberikan jarak (whitespace) ke elemen di bawahnya */
+    margin-bottom: var(--space-md); 
 }
 
 .main-header h1 {
