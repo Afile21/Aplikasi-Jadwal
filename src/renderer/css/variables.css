@@ -2,66 +2,71 @@
 
 /* --- 1. WARNA UTAMA (Dark Theme - Default) --- */
 :root {
-    --bg-main: #1e1e2e;      
-    --bg-sidebar: #181825;   
-    --bg-card: #313244;      
+    --bg-main: #11111b;      /* Sangat gelap, memberikan kontras tinggi untuk Bento Box */
+    --bg-sidebar: #1e1e2e;   /* Warna kotak Bento */
+    --bg-card: #1e1e2e;      
     
     --text-primary: #cdd6f4;
     --text-secondary: #a6adc8;
     
     --accent-color: #89b4fa;
-    --accent-hover: #74c7ec;
+    --accent-hover: #b4befe;
 
-    --border-color: rgba(255, 255, 255, 0.05); 
+    --border-color: rgba(255, 255, 255, 0.04); 
     --border-light: 1px solid var(--border-color);
 
-    /* --- SHADOWS (Dark Mode) --- */
-    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.25); 
-    --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.35);
-    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* --- SHADOWS (Dark Mode Soft UI) --- */
+    --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.5); 
+    --shadow-hover: 0 15px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(137, 180, 250, 0.2);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* --- 2. WARNA UTAMA (Light Theme) --- */
-/* Tema terang akan aktif jika kita menambahkan atribut data-theme="light" di tag HTML/Body nantinya */
 [data-theme="light"] {
-    --bg-main: #f0f4f8;      /* Latar belakang utama yang lebih terang dan lapang */
-    --bg-sidebar: #ffffff;   /* Putih bersih untuk elemen struktur seperti sidebar */
-    --bg-card: #ffffff;      /* Putih bersih untuk Bento Box */
+    --bg-main: #f4f7fe;      /* Warna abu-abu kebiruan sangat muda (Clean & Airy) */
+    --bg-sidebar: #ffffff;   /* Putih murni agar kotak Bento sangat menonjol */
+    --bg-card: #ffffff;      
     
-    --text-primary: #2d3748; /* Abu-abu gelap untuk teks utama agar sangat nyaman dibaca */
-    --text-secondary: #718096; /* Abu-abu medium untuk teks detail */
+    --text-primary: #2b3674; /* Biru dongker (navy) gelap, jauh lebih elegan dibanding hitam pekat */
+    --text-secondary: #a3aed1; 
     
-    --accent-color: #4299e1; /* Biru cerah untuk tombol dan aksen */
-    --accent-hover: #3182ce;
+    --accent-color: #4318ff; /* Biru modern / vibrant */
+    --accent-hover: #3311db;
     
-    --border-color: rgba(0, 0, 0, 0.05); /* Pembatas sangat halus */
+    --border-color: rgba(0, 0, 0, 0.03); /* Border nyaris tidak terlihat */
     --border-light: 1px solid var(--border-color);
 
-    /* --- SHADOWS (Light Mode Soft UI) --- */
-    /* Bayangan abu-abu kebiruan yang sangat lembut agar kotak terlihat melayang */
-    --shadow-soft: 0 8px 24px rgba(149, 157, 165, 0.15); 
-    --shadow-hover: 0 12px 32px rgba(149, 157, 165, 0.25);
-    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* --- SHADOWS (Light Mode Soft UI / Neo-morphism Lite) --- */
+    /* Kunci desain ini: Bayangan sangat besar (40px) tapi dengan transparansi ekstrem (12%) */
+    --shadow-soft: 0 18px 40px rgba(112, 144, 176, 0.12); 
+    --shadow-hover: 0 20px 50px rgba(112, 144, 176, 0.20), 0 0 0 1px rgba(67, 24, 255, 0.05);
+    --shadow-inner: inset 0 2px 5px rgba(112, 144, 176, 0.15);
 }
 
 /* --- Variabel Global (Berlaku untuk kedua tema) --- */
 :root {
-    /* --- 3. BORDER RADIUS (Sudut Membulat ala Bento UI) --- */
-    --radius-sm: 8px;
-    --radius-md: 16px;       
-    --radius-lg: 24px;       /* SANGAT PENTING untuk estetika Bento UI */
+    /* --- 3. BORDER RADIUS (Bento UI) --- */
+    --radius-sm: 12px;       /* Untuk tombol, input, label */
+    --radius-md: 20px;       /* Untuk kartu kecil */
+    --radius-lg: 32px;       /* SANGAT PENTING: Lengkungan drastis khas Bento Box */
     --radius-full: 9999px;   
 
     /* --- 4. SPACING (Clean & Airy Whitespace) --- */
-    --space-xs: 8px;
-    --space-sm: 16px;
-    --space-md: 24px;        
-    --space-lg: 32px;        
-    --space-xl: 48px;
+    /* Nilai spacing diperbesar untuk memberi ilusi ruang lega */
+    --space-xs: 12px;
+    --space-sm: 20px;
+    --space-md: 32px;        
+    --space-lg: 40px;        
+    --space-xl: 60px;
 
     /* --- 5. TRANSITIONS (Animasi Mulus) --- */
-    --transition-fast: 0.15s ease-in-out;
-    --transition-smooth: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Animasi sedikit memantul (bouncy) yang modern */
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Transisi snappy tapi elegan */
+}
+
+/* --- Pengaturan Dasar Global --- */
+html {
+    scroll-behavior: smooth; /* Efek smooth scrolling saat berpindah halaman/jangkar */
 }
 
 body {
@@ -71,22 +76,21 @@ body {
     color: var(--text-primary);
     overflow: hidden; 
     -webkit-font-smoothing: antialiased; 
-    /* Menambahkan transisi global agar saat tema diubah, warnanya berganti dengan mulus (tidak berkedip) */
     transition: background-color var(--transition-smooth), color var(--transition-smooth); 
 }
 
-/* Mempercantik bentuk Scrollbar agar lebih elegan & seamless dengan desain Soft UI */
+/* --- SCROLLBAR (Tipis, Elegan, Soft UI) --- */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 ::-webkit-scrollbar-track {
     background: transparent; 
 }
 ::-webkit-scrollbar-thumb {
-    background: var(--text-secondary); /* Menggunakan warna sekunder agar lebih netral di kedua tema */
+    background: var(--text-secondary); 
     border-radius: var(--radius-full);
-    border: 2px solid var(--bg-main); 
+    border: none; 
 }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color); 
