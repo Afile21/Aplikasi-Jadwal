@@ -50,6 +50,10 @@
     gap: var(--space-md); 
     transition: filter var(--transition-smooth); /* Akan digunakan untuk nge-blur background saat menu hp terbuka */
 }
+/* Memastikan kontainer tab tidak tergencet sehingga selalu memicu scroll jika kontennya panjang */
+.main-content > div[id^="view-"] {
+    flex-shrink: 0;
+}
 
 /* Header Utama (Bento Box Atas) */
 /* Header Utama (Bento Box Atas) */
@@ -145,4 +149,14 @@
     .header-nav-tanggal, .progress-container { width: 100%; }
     .progress-container { text-align: left; }
     .progress-bar { width: 100%; }
+
+    /* 3. PERBAIKAN SCROLL GLOBAL UNTUK SEMUA TAB DI MOBILE */
+    .main-content > div[id^="view-"] {
+        height: auto !important; /* Membatalkan kuncian height: 100% dari HTML */
+        min-height: 100%;        /* Tetap rapi jika isi halamannya sedikit */
+    }
+    
+    .main-content {
+        -webkit-overflow-scrolling: touch; /* Membuat scroll terasa sangat mulus di layar sentuh (HP) */
+    }
 }
