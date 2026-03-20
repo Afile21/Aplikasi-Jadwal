@@ -324,3 +324,35 @@
     border-color: var(--accent-color); 
     box-shadow: var(--shadow-soft); 
 }
+/* --- KARTU PROYEK (BENTO SUMMARY) --- */
+.proyek-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px; /* Memaksa kartu menjadi lebih kotak (padat) khas Bento */
+}
+
+/* Efek menyala saat kartu proyek di-hover untuk mengindikasikan bisa diklik */
+.proyek-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-5px) scale(1.02);
+}
+
+.proyek-progress-bg {
+    background-color: var(--bg-main); 
+    height: 10px; 
+    border-radius: var(--radius-full); 
+    margin-top: 15px; 
+    overflow: hidden; 
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-inner);
+}
+
+.proyek-progress-fill {
+    background-color: var(--accent-color); 
+    height: 100%; 
+    border-radius: var(--radius-full);
+    transition: width var(--transition-smooth);
+    box-shadow: 0 0 10px rgba(137, 180, 250, 0.4);
+}
