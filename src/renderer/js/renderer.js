@@ -532,4 +532,16 @@ if (btnHamburger && sidebar && overlay) {
             }
         }
     });
+
+    // 6. FITUR RESIZE WINDOW: Jika ukuran layar berubah (misal dari HP ke Desktop), pastikan sidebar otomatis menyesuaikan
+    let resizeTimeout;
+
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            if (window.innerWidth > 850 && sidebar.classList.contains('terbuka')) {
+                toggleSidebar(false);
+            }
+        }, 150);
+    });
 }
