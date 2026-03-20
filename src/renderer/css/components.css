@@ -336,7 +336,7 @@
 /* Efek menyala saat kartu proyek di-hover untuk mengindikasikan bisa diklik */
 .proyek-card:hover {
     border-color: var(--accent-color);
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-5px) scale(1.002);
 }
 
 .proyek-progress-bg {

@@ -18,25 +18,24 @@ export function initProyek() {
             const persen = totalMs === 0 ? 0 : Math.round((selesaiMs / totalMs) * 100);
 
             const card = document.createElement('div');
-            card.className = 'jadwal-card';
-            card.style.flexDirection = 'column';
-            card.style.alignItems = 'stretch';
-            card.style.cursor = 'pointer'; // Ubah cursor agar terlihat bisa diklik
+            // Menggabungkan class bawaan jadwal-card dengan class Bento proyek-card
+            card.className = 'jadwal-card proyek-card';
             
-            // Render HANYA ringkasan (Summary) di layar utama
             card.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
-                        <h3 style="margin: 0; font-size: 20px; color: var(--accent-color);">${proyek.nama_proyek}</h3>
-                        <span style="font-size: 12px; color: var(--text-secondary);">Target: ${proyek.target_tanggal || '-'}</span>
+                        <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--text-primary);">${proyek.nama_proyek}</h3>
+                        <span style="font-size: 12px; color: var(--text-secondary);">🎯 Target: ${proyek.target_tanggal || '-'}</span>
                     </div>
-                    <button class="btn-hapus-proyek" data-id="${proyek.id_proyek}" style="background: transparent; border: none; cursor: pointer; font-size: 16px; z-index: 2; position: relative;" title="Hapus Proyek">🗑️</button>
+                    <button class="btn-hapus-proyek btn-close" data-id="${proyek.id_proyek}" style="width: 28px; height: 28px; font-size: 14px;" title="Hapus Proyek">✖</button>
                 </div>
                 
-                <div style="background-color: var(--bg-main); height: 8px; border-radius: 4px; margin-top: auto; overflow: hidden; margin-bottom: 8px;">
-                    <div style="background-color: var(--accent-color); height: 100%; width: ${persen}%; transition: width 0.3s;"></div>
+                <div>
+                    <div class="proyek-progress-bg">
+                        <div class="proyek-progress-fill" style="width: ${persen}%;"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); text-align: right; font-weight: 600;">Progres: ${persen}% (${selesaiMs}/${totalMs})</div>
                 </div>
-                <div style="font-size: 12px; color: var(--text-secondary); text-align: right; margin-bottom: 5px;">Progress: ${persen}% (${selesaiMs}/${totalMs})</div>
             `;
 
             // Event Listener Buka Modal Detail saat kartu diklik
