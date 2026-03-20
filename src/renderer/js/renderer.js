@@ -450,43 +450,39 @@ btnToggleTema.addEventListener('click', () => {
 });
 
 // ==========================================
-// SISTEM NAVIGASI MOBILE (HAMBURGER MENU)
+// SISTEM NAVIGASI MOBILE (HAMBURGER MENU & OVERLAY)
 // ==========================================
 const btnHamburger = document.getElementById('btn-hamburger');
+const btnTutupSidebar = document.getElementById('btn-tutup-sidebar');
 const sidebar = document.querySelector('.sidebar');
-const mainContent = document.querySelector('.main-content');
+const overlay = document.getElementById('sidebar-overlay');
 
-if (btnHamburger && sidebar) {
-    btnHamburger.addEventListener('click', () => {
-        sidebar.classList.toggle('terbuka');
-        
-        // Memberikan efek blur pada layar utama saat sidebar terbuka (Glassmorphism effect)
-        if (sidebar.classList.contains('terbuka')) {
-            mainContent.style.filter = 'blur(4px)';
-            mainContent.style.pointerEvents = 'none'; // Mencegah klik elemen di belakang
-        } else {
-            mainContent.style.filter = 'none';
-            mainContent.style.pointerEvents = 'auto';
-        }
-    });
+// Fungsi pembantu untuk mengatur state sidebar
+function toggleSidebar(buka) {
+    if (buka) {
+        sidebar.classList.add('terbuka');
+        overlay.classList.add('muncul');
+    } else {
+        sidebar.classList.remove('terbuka');
+        overlay.classList.remove('muncul');
+    }
+}
 
-    // Menutup sidebar jika user mengklik area di luar menu (layar utama)
-    document.addEventListener('click', (e) => {
-        // Jika yang diklik bukan sidebar dan bukan tombol hamburger, dan sidebar sedang terbuka
-        if (!sidebar.contains(e.target) && !btnHamburger.contains(e.target) && sidebar.classList.contains('terbuka')) {
-            sidebar.classList.remove('terbuka');
-            mainContent.style.filter = 'none';
-            mainContent.style.pointerEvents = 'auto';
-        }
-    });
+if (btnHamburger && sidebar && overlay && btnTutupSidebar) {
+    // Membuka sidebar (dari tombol di layar utama)
+    btnHamburger.addEventListener('click', () => toggleSidebar(true));
 
-    // Otomatis menutup sidebar setelah menu navigasi dipilih (klik menu)
+    // METODE TUTUP 1: Klik tombol di dalam sidebar
+    btnTutupSidebar.addEventListener('click', () => toggleSidebar(false));
+
+    // METODE TUTUP 2: Klik area gelap di luar sidebar (Overlay)
+    overlay.addEventListener('click', () => toggleSidebar(false));
+
+    // Otomatis menutup sidebar setelah menu navigasi diklik (Hanya di layar sempit)
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', () => {
-            if (window.innerWidth <= 850) { // Hanya berlaku di mode layar kecil
-                sidebar.classList.remove('terbuka');
-                mainContent.style.filter = 'none';
-                mainContent.style.pointerEvents = 'auto';
+            if (window.innerWidth <= 850) { 
+                toggleSidebar(false);
             }
         });
     });
