@@ -3,7 +3,7 @@
 /* --- TOMBOL (BUTTONS) --- */
 .btn-tambah, .btn-simpan, .btn-tambah-setting {
     background-color: var(--accent-color);
-    color: #11111b; /* Warna gelap khusus teks di atas aksen */
+    color: var(--text-on-accent); /* <--- UBAH BARIS INI */
     border: none;
     border-radius: var(--radius-md);
     font-weight: 600;

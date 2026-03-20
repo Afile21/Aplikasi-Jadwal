@@ -123,14 +123,18 @@
                     
                     <div class="settings-box">
                         <h3>🎨 Kelola Kategori</h3>
-                        <form id="form-tambah-kategori" class="settings-form" style="display: flex; gap: 10px; margin-bottom: var(--space-md);">
-                            <input type="text" id="input-nama-kat" placeholder="Nama Kategori..." required class="input-setting" style="flex: 1;">
-                            <input type="color" id="input-warna-kat" value="#89b4fa" class="input-color">
-                            <button type="submit" class="btn-tambah-setting">Tambah</button>
+                        <form id="form-tambah-kategori" class="settings-form" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: var(--space-md);">
+                            
+                            <input type="text" id="input-nama-kat" placeholder="Nama Kategori..." required class="input-setting" style="width: 100%; box-sizing: border-box;">
+                            
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="color" id="input-warna-kat" value="#89b4fa" class="input-color">
+                                <button type="submit" class="btn-tambah-setting" style="flex: 1;">Tambah Kategori</button>
+                            </div>
+
                         </form>
                         <div id="list-kategori-container" class="settings-list"></div>
                     </div>
-
                     <div class="settings-box">
                         <h3>⏰ Kelola Rutinitas Harian</h3>
                         <form id="form-tambah-rutinitas" class="settings-form" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: var(--space-md);">

@@ -11,6 +11,7 @@
     
     --accent-color: #89b4fa;
     --accent-hover: #b4befe;
+    --text-on-accent: #11111b; /* Teks gelap untuk tombol biru muda */
 
     --border-color: rgba(255, 255, 255, 0.04); 
     --border-light: 1px solid var(--border-color);
@@ -32,6 +33,7 @@
     
     --accent-color: #4318ff; /* Biru modern / vibrant */
     --accent-hover: #3311db;
+    --text-on-accent: #ffffff; /* Teks putih untuk tombol biru pekat */
     
     --border-color: rgba(0, 0, 0, 0.03); /* Border nyaris tidak terlihat */
     --border-light: 1px solid var(--border-color);

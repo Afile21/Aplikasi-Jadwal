@@ -368,14 +368,23 @@ function aktifkanDragAndDrop() {
     const kolomDone = document.getElementById('list-done');
 
     const opsiSortable = {
-        group: 'kanban', // Menghubungkan ketiga kolom agar jadwal bisa berpindah
-        animation: 150,  // Animasi mulus saat digeser (dalam milidetik)
-        ghostClass: 'kartu-bayangan', // Class CSS untuk efek visual saat kartu ditarik
+        group: 'kanban', 
+        animation: 150,  
+        ghostClass: 'kartu-bayangan', 
+
+        // --- FIX: LOGIKA AUTO-SCROLL MOBILE & TABLET ---
+        scroll: true,              // Pastikan fitur scroll aktif
+        forceFallback: true,       // WAJIB: Memaksa pakai JS drag (bukan bawaan browser) agar lancar di HP/Tablet
+        bubbleScroll: true,        // Membaca scroll di container parent (vertikal) maupun horizontal
+        scrollSensitivity: 100,    // Seberapa dekat jari ke tepi layar sebelum mulai scroll (dalam pixel)
+        scrollSpeed: 15,           // Kecepatan auto-scroll
+        // -----------------------------------------------
+
         onEnd: function (evt) {
             // Fungsi yang otomatis berjalan saat mouse dilepas (kartu dijatuhkan)
-            const kartu = evt.item;          // Elemen kartu HTML yang ditarik
-            const kolomTujuan = evt.to.id;   // ID kolom tempat kartu dijatuhkan
-            const idJadwal = kartu.getAttribute('data-id'); // Mengambil ID dari database
+            const kartu = evt.item;          
+            const kolomTujuan = evt.to.id;   
+            const idJadwal = kartu.getAttribute('data-id'); 
 
             // Menentukan status baru berdasarkan nama kolom
             let statusBaru = 'To Do';
