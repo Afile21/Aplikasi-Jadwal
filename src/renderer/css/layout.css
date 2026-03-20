@@ -78,11 +78,12 @@
 
 /* --- KANBAN BOARD LAYOUT (Bento Grid) --- */
 .kanban-board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); 
+    display: flex; /* Mengubah dari grid ke flex agar lebih mudah mengontrol scroll */
     gap: var(--space-md);
     flex: 1; 
     min-height: 0; 
+    overflow-x: auto; /* WAJIB: Aktifkan scroll horizontal jika kolom melebihi lebar layar */
+    padding-bottom: 12px; /* Memberi ruang agar scrollbar tidak menabrak kartu */
 }
 
 .kanban-column {
@@ -93,6 +94,8 @@
     box-shadow: var(--shadow-soft);
     border: var(--border-light);
     overflow: hidden;
+    min-width: 320px; /* ATURAN PENTING: Lebar kolom dikunci, tidak boleh lebih sempit dari ini */
+    flex: 1; /* Biarkan kolom membesar jika ada sisa ruang di layar lebar */
 }
 
 .kanban-list {

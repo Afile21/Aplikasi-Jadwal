@@ -80,19 +80,35 @@
 .jadwal-aksi {
     display: flex; 
     align-items: center; 
-    margin-top: var(--space-sm); 
+    margin-top: auto; /* Mendorong area aksi selalu ke bagian paling bawah kartu */
     padding-top: var(--space-sm); 
     border-top: var(--border-light); 
     justify-content: space-between;
     gap: 10px;
-    flex-wrap: wrap; /* SANGAT PENTING: Mencegah tombol bertumpuk jika layar sempit */
 }
 
 /* Wadah untuk menyejajarkan ikon Edit & Hapus secara horizontal */
 .jadwal-aksi > div {
     display: flex;
-    gap: 8px; /* Jarak proporsional antar tombol */
+    gap: 8px; /* Jarak proporsional antar tombol horizontal */
     align-items: center;
+    flex-shrink: 0; /* Mencegah tombol mengecil, memanjang, atau terlipat */
+}
+
+.status-dropdown {
+    flex: 1; /* Biarkan dropdown status mengambil sisa ruang di sebelah kiri */
+    max-width: 140px; 
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    border: var(--border-light);
+    border-radius: var(--radius-sm); 
+    padding: 6px 10px;
+    font-size: 12px; cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.status-dropdown:hover {
+    border-color: var(--text-secondary);
 }
 
 /* Desain tombol aksi menjadi kotak bergaya Soft UI */
