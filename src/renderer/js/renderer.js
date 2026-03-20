@@ -427,35 +427,46 @@ loadKategori();
 // ==========================================
 // SISTEM TEMA (LIGHT/DARK MODE)
 // ==========================================
-const btnToggleTema = document.getElementById('btn-toggle-tema');
+
+// Ambil SEMUA tombol toggle tema (baik yang di desktop maupun mobile)
+const tombolTemaSemua = document.querySelectorAll('.btn-toggle-tema');
+
+// Fungsi pembantu untuk mengubah ikon di semua tombol agar selalu sinkron
+function updateIkonTema(ikon) {
+    tombolTemaSemua.forEach(btn => {
+        btn.innerText = ikon;
+    });
+}
 
 // Cek tema apa yang terakhir kali dipakai oleh user (simpan di LocalStorage)
 const temaTersimpan = localStorage.getItem('tema-jadwalku') || 'dark';
 if (temaTersimpan === 'light') {
     document.body.setAttribute('data-theme', 'light');
-    btnToggleTema.innerText = '☀️';
+    updateIkonTema('☀️');
 } else {
     document.body.removeAttribute('data-theme');
-    btnToggleTema.innerText = '🌙';
+    updateIkonTema('🌙');
 }
 
-// Event saat tombol ditekan
-btnToggleTema.addEventListener('click', () => {
-    // Berikan efek animasi putar sedikit saat diklik
-    btnToggleTema.style.transform = 'rotate(360deg)';
-    setTimeout(() => btnToggleTema.style.transform = 'rotate(0deg)', 300);
+// Tambahkan event listener 'click' ke setiap tombol yang ditemukan
+tombolTemaSemua.forEach(btnToggleTema => {
+    btnToggleTema.addEventListener('click', () => {
+        // Berikan efek animasi putar sedikit pada tombol yang sedang diklik
+        btnToggleTema.style.transform = 'rotate(360deg)';
+        setTimeout(() => btnToggleTema.style.transform = 'rotate(0deg)', 300);
 
-    const temaSaatIni = document.body.getAttribute('data-theme');
-    
-    if (temaSaatIni === 'light') {
-        document.body.removeAttribute('data-theme'); // Kembali ke Dark
-        btnToggleTema.innerText = '🌙';
-        localStorage.setItem('tema-jadwalku', 'dark');
-    } else {
-        document.body.setAttribute('data-theme', 'light'); // Pindah ke Light
-        btnToggleTema.innerText = '☀️';
-        localStorage.setItem('tema-jadwalku', 'light');
-    }
+        const temaSaatIni = document.body.getAttribute('data-theme');
+        
+        if (temaSaatIni === 'light') {
+            document.body.removeAttribute('data-theme'); // Kembali ke Dark
+            updateIkonTema('🌙'); // Sinkronkan ikon bulan ke semua tombol
+            localStorage.setItem('tema-jadwalku', 'dark');
+        } else {
+            document.body.setAttribute('data-theme', 'light'); // Pindah ke Light
+            updateIkonTema('☀️'); // Sinkronkan ikon matahari ke semua tombol
+            localStorage.setItem('tema-jadwalku', 'light');
+        }
+    });
 });
 
 // ==========================================
