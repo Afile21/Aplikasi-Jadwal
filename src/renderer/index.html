@@ -10,13 +10,18 @@
 <body>
     <div class="app-layout">
         
+        <div id="sidebar-overlay" class="sidebar-overlay" style="display: none;"></div>
+
         <aside class="sidebar">
-            <div class="profile-section" style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <h2>JadwalKu.</h2>
-                    <p id="current-date">Senin, 10 Maret</p>
-                </div>
-                <button id="btn-toggle-tema" style="background: transparent; border: none; cursor: pointer; font-size: 22px; transition: transform var(--transition-smooth);">🌙</button>
+            <button id="btn-tutup-sidebar" class="btn-hamburger" style="align-self: flex-start; margin-bottom: 20px;">
+                <span class="bar" style="transform: rotate(45deg) translate(5px, 5px);"></span>
+                <span class="bar" style="opacity: 0;"></span>
+                <span class="bar" style="transform: rotate(-45deg) translate(5px, -5px);"></span>
+            </button>
+
+            <div class="profile-section">
+                <h2>JadwalKu.</h2>
+                <p id="current-date">Senin, 10 Maret</p>
             </div>
             
             <button class="btn-tambah" id="btn-tambah-jadwal">+ Tambah Jadwal</button>
@@ -25,15 +30,23 @@
                 <a href="#" class="menu-item active" id="nav-beranda">🏠 Beranda (Fokus)</a>
                 <a href="#" class="menu-item" id="nav-proyek">🎯 My Goals</a>
                 <a href="#" class="menu-item" id="nav-statistik">📊 Statistik</a>
-                <a href="#" class="menu-item" id="nav-pengaturan">⚙️ Pengaturan</a> </nav>
+                <a href="#" class="menu-item" id="nav-pengaturan">⚙️ Pengaturan</a> 
+            </nav>
         </aside>
 
         <main class="main-content">
-            <button id="btn-hamburger" class="btn-hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
+            <div class="mobile-top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
+                <button id="btn-hamburger" class="btn-hamburger" style="margin: 0;">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                
+                <button id="btn-toggle-tema" class="btn-tema-top" style="background: var(--bg-sidebar); border: var(--border-light); border-radius: var(--radius-md); padding: 8px 12px; cursor: pointer; font-size: 20px; box-shadow: var(--shadow-soft); transition: var(--transition-fast);">
+                    🌙
+                </button>
+            </div>
+            
             <div id="view-beranda">
                 <header class="main-header">
                     <div class="header-nav-tanggal">
