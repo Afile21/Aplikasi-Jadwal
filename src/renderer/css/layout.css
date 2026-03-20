@@ -119,55 +119,70 @@
 }
 
 
+/* --- MOBILE TOP BAR (Bento Header Layar Sempit) --- */
+.mobile-top-bar {
+    display: none !important; /* Sembunyikan di layar desktop secara default */
+}
+
+/* --- OVERLAY SIDEBAR MOBILE (Glassmorphism) --- */
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(17, 17, 27, 0.6); /* Warna gelap transparan */
+    backdrop-filter: blur(4px); /* Efek blur/kaca */
+    z-index: 95; /* Harus di bawah sidebar (100) tapi di atas main content */
+    opacity: 0;
+    transition: opacity var(--transition-smooth);
+    pointer-events: none; /* Cegah klik saat tersembunyi */
+}
+
+.sidebar-overlay.muncul {
+    opacity: 1;
+    pointer-events: auto; /* Izinkan klik untuk menutup sidebar */
+}
 
 /* ==========================================
    RESPONSIVE DESIGN (TATA LETAK MOBILE)
    ========================================== */
 @media (max-width: 850px) {
-    /* 1. Sembunyikan Sidebar ke luar layar sebelah kiri */
-    .sidebar {
-        position: absolute;
-        left: var(--space-md); top: var(--space-md); bottom: var(--space-md);
-        transform: translateX(-150%);
-        opacity: 0;
-        width: calc(100% - calc(var(--space-md) * 2));
-        pointer-events: none;
+    /* 1. Munculkan Header Bento di Layar Sempit */
+    .mobile-top-bar {
+        display: flex !important; 
     }
-    
-    /* Class tambahan untuk memunculkan sidebar (Akan dikontrol JavaScript) */
-    .sidebar.terbuka {
-        transform: translateX(0);
+
+    /* 2. Ubah Sifat Sidebar Menjadi Melayang (Slide-in Panel) */
+    .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0 var(--radius-lg) var(--radius-lg) 0; /* Hanya sudut kanan yang melengkung Bento */
+        transform: translateX(-100%); /* Sembunyikan ke luar layar kiri */
+        z-index: 100;
+        width: 280px;
+        box-sizing: border-box;
         opacity: 1;
         pointer-events: auto;
     }
     
-    /* 2. Ubah tata letak utama menjadi vertikal ke bawah */
-    /* ✨ PERBAIKI SCROLL KANBAN DI MOBILE */
-    .kanban-board { 
-        display: flex; 
-        flex-direction: column; 
-        height: auto; 
-        flex: none; 
+    /* Class tambahan untuk animasi masuk (Dikontrol JavaScript nanti) */
+    .sidebar.terbuka {
+        transform: translateX(0);
+        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5); /* Tambahkan bayangan ke kanan */
     }
-    
-    .kanban-column {
-        min-height: 450px; 
-        flex: none;
+
+    /* 3. Penyesuaian Ruang Utama */
+    .app-layout {
+        padding: var(--space-sm);
     }
-    .dashboard-grid { grid-template-columns: 1fr; }
     
     .main-header { flex-direction: column; align-items: flex-start; }
     .header-nav-tanggal, .progress-container { width: 100%; }
     .progress-container { text-align: left; }
     .progress-bar { width: 100%; }
 
-    /* 3. PERBAIKAN SCROLL GLOBAL UNTUK SEMUA TAB DI MOBILE */
-    .main-content > div[id^="view-"] {
-        height: auto !important; /* Membatalkan kuncian height: 100% dari HTML */
-        min-height: 100%;        /* Tetap rapi jika isi halamannya sedikit */
-    }
-    
-    .main-content {
-        -webkit-overflow-scrolling: touch; /* Membuat scroll terasa sangat mulus di layar sentuh (HP) */
-    }
+    /* Aturan Kanban akan kita rapikan di Fase 3, biarkan seperti ini dulu untuk mobile */
+    .kanban-board { display: flex; flex-direction: column; height: auto; flex: none; }
+    .kanban-column { min-height: 450px; flex: none; }
+    .dashboard-grid { grid-template-columns: 1fr; }
 }
