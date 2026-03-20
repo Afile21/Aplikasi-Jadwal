@@ -153,6 +153,15 @@
         display: flex !important; 
     }
 
+    /* Sembunyikan tombol tema sidebar saat di layar mobile */
+    .btn-tema-desktop {
+        display: none !important;
+    }
+
+    .profile-section {
+        margin-top: 1.5rem;
+    }
+
     /* 2. Ubah Sifat Sidebar Menjadi Melayang (Slide-in Panel) */
     .sidebar {
         position: fixed;
@@ -180,8 +189,18 @@
     }
     
     .main-header { flex-direction: column; align-items: flex-start; }
-    .header-nav-tanggal, .progress-container { width: 100%; }
-    .progress-container { text-align: left; }
+    .header-nav-tanggal { width: 100%; }
+    
+    /* Perbaikan UI Progress Bar di Mobile */
+    .progress-container { 
+        width: 100%;
+        max-width: 100%; /* Memenuhi lebar layar mobile */
+        align-items: center; /* Menengahkan posisi bar */
+    }
+    .progress-container span {
+        width: 100%; 
+        text-align: right; /* Menarik teks ke sisi kanan atas bar */
+    }
     .progress-bar { width: 100%; }
 
     /* Aturan Kanban akan kita rapikan di Fase 3, biarkan seperti ini dulu untuk mobile */

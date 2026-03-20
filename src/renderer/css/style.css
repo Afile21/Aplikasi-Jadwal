@@ -4,16 +4,21 @@
 @import url('./components.css');
 
 /* --- PROGRESS BAR (Lebih Clean & Modern) --- */
+/* --- PROGRESS BAR (Lebih Clean & Modern) --- */
 .progress-container { 
-    text-align: right; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Supaya teks dan bar rata kanan di desktop */
     font-size: 14px; 
     color: var(--text-secondary); 
     font-weight: 500;
+    width: 100%;
+    max-width: 250px; /* Membatasi lebar agar tidak keluar dari header */
 }
 .progress-bar {
-    width: 250px; /* Diperlebar sedikit agar lebih proporsional */
-    height: 10px; /* Sedikit lebih tebal */
-    background-color: var(--bg-main); /* Menggunakan warna dasar agar terlihat lebih "masuk" (inner) */
+    width: 100%; /* Lebar mengikuti max-width container-nya */
+    height: 10px; 
+    background-color: var(--bg-main); 
     border-radius: var(--radius-full); 
     margin-top: 8px; 
     overflow: hidden;

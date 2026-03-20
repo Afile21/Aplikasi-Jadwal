@@ -473,9 +473,9 @@ tombolTemaSemua.forEach(btnToggleTema => {
 // SISTEM NAVIGASI MOBILE (HAMBURGER MENU & OVERLAY)
 // ==========================================
 const btnHamburger = document.getElementById('btn-hamburger');
-const btnTutupSidebar = document.getElementById('btn-tutup-sidebar');
 const sidebar = document.querySelector('.sidebar');
 const overlay = document.getElementById('sidebar-overlay');
+const mainContent = document.querySelector('.main-content'); // Elemen untuk deteksi scroll
 
 // Fungsi pembantu untuk mengatur state sidebar
 function toggleSidebar(buka) {
@@ -488,22 +488,48 @@ function toggleSidebar(buka) {
     }
 }
 
-if (btnHamburger && sidebar && overlay && btnTutupSidebar) {
-    // Membuka sidebar (dari tombol di layar utama)
-    btnHamburger.addEventListener('click', () => toggleSidebar(true));
+if (btnHamburger && sidebar && overlay) {
+    // 1. FITUR TOGGLE: Klik hamburger untuk buka/tutup
+    btnHamburger.addEventListener('click', () => {
+        // Cek apakah sidebar sedang terbuka atau tertutup
+        const isTerbuka = sidebar.classList.contains('terbuka');
+        // Jika terbuka maka tutup (false), jika tertutup maka buka (true)
+        toggleSidebar(!isTerbuka);
+    });
 
-    // METODE TUTUP 1: Klik tombol di dalam sidebar
-    btnTutupSidebar.addEventListener('click', () => toggleSidebar(false));
-
-    // METODE TUTUP 2: Klik area gelap di luar sidebar (Overlay)
+    // 2. FITUR KLIK LUAR: Klik area gelap (Overlay) untuk menutup sidebar
     overlay.addEventListener('click', () => toggleSidebar(false));
 
-    // Otomatis menutup sidebar setelah menu navigasi diklik (Hanya di layar sempit)
+    // 3. FITUR SCROLL: Menutup otomatis sidebar saat layar di-scroll
+    if (mainContent) {
+        mainContent.addEventListener('scroll', () => {
+            // Hanya tutup jika berada di mode layar HP dan sidebar sedang terbuka
+            if (window.innerWidth <= 850 && sidebar.classList.contains('terbuka')) {
+                toggleSidebar(false);
+            }
+        });
+    }
+
+    // 4. Menutup otomatis sidebar setelah menu di dalam navigasi diklik
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', () => {
             if (window.innerWidth <= 850) { 
                 toggleSidebar(false);
             }
         });
+    });
+
+    // 5. FITUR KLIK DI LUAR SIDEBAR (selain sidebar & tombol)
+    document.addEventListener('click', (e) => {
+        const klikDiDalamSidebar = sidebar.contains(e.target);
+        const klikHamburger = btnHamburger.contains(e.target);
+
+        // Jika klik bukan di sidebar & bukan di tombol hamburger
+        if (!klikDiDalamSidebar && !klikHamburger) {
+            // Hanya tutup kalau sedang terbuka
+            if (sidebar.classList.contains('terbuka')) {
+                toggleSidebar(false);
+            }
+        }
     });
 }
